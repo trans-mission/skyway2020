@@ -3,13 +3,15 @@
 module.exports = async function (context, myTimer) {
     const request = require('request');
     const azure = require('azure-storage');
-
-    const imageUri = getCameraUri();
     
     const blobService = azure.createBlobService(process.env["AzureWebJobsStorage"]);
+    const queueSvc = azure.createQueueService(process.env["AzureWebJobsStorage"]);
+
     blobService.createContainerIfNotExists('images', {publicAccessLevel: 'blob' }, function(error, result, response) {
         if (!error) {
+            
             const stream = getBlobStream(blobService);
+            const imageUri = getCameraUri();
             request(imageUri, (error, response, body) => {
                 if (error) {
                     context.error(error);

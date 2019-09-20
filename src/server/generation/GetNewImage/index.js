@@ -4,21 +4,44 @@ module.exports = async function (context, myTimer) {
     const request = require('request');
     const azure = require('azure-storage');
     
-    const blobService = azure.createBlobService(process.env["AzureWebJobsStorage"]);
-    const queueSvc = azure.createQueueService(process.env["AzureWebJobsStorage"]);
+    const storageContainerName = 'images';
+    const queueName = 'new-images';
 
-    blobService.createContainerIfNotExists('images', {publicAccessLevel: 'blob' }, function(error, result, response) {
+    const blobService = azure.createBlobService(process.env["AzureWebJobsStorage"]);
+    const queueService = azure.createQueueService(process.env["AzureWebJobsStorage"]);
+
+    blobService.createContainerIfNotExists(storageContainerName, {publicAccessLevel: 'blob' }, function(error, result, response) {
         if (!error) {
-            
-            const stream = getBlobStream(blobService);
-            const imageUri = getCameraUri();
-            request(imageUri, (error, response, body) => {
-                if (error) {
-                    context.error(error);
-                }
-            }).pipe(stream);
+            getImageFromCamAndSendQueueMessage();
         }
     });
+
+    function getImageFromCamAndSendQueueMessage() {
+        const fileName = getFileName();
+        const stream = getBlobStream(fileName);
+        const imageUri = getCameraUri();
+
+        request(imageUri, (error, response, body) => {
+            if (error) {
+                context.error(error);
+            }
+
+            sendQueueMessage(fileName);
+        }).pipe(stream);
+    }
+
+    function sendQueueMessage(message) {
+        const queueMessage = Buffer.from(message).toString('base64');
+        queueService.createMessage(queueName, queueMessage, function (error, results, response) {
+            if (!error) {
+                // Message inserted
+            }
+        });
+    }
+        
+    function getBlobStream(fileName) {
+        return blobService.createWriteStreamToBlockBlob(storageContainerName, fileName);
+    }
     
     function getCameraUri() {
         return 'https://fl511.com/map/Cctv/647--12';
@@ -34,14 +57,17 @@ module.exports = async function (context, myTimer) {
             https://fl511.com/map/Cctv/813--12
         */
     }
-        
-    function getBlobStream(blobService) {
-        const fileName = new Date().getTime().toString();
-        return blobService.createWriteStreamToBlockBlob('images', fileName);
+    
+    function getFileName() {
+        const dateInMilliseconds = new Date().getTime().toString();
+        const fileName = `${dateInMilliseconds}.jpg`;
+        return fileName;
     }
-        
+
     const timeStamp = new Date().toISOString();
     context.log('JavaScript timer trigger function ran!', timeStamp);
 };
+
+
 
 

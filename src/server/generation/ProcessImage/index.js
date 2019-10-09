@@ -22,31 +22,39 @@ module.exports = async function (context, newImageQueueItem) {
 
     function processImage() {
       const mat = cv.imread(path.join(workDir, 'temp.jpg'));
-      cv.imwrite(path.join(workDir, 'roundTrip.png'), mat);
+      
+      const data = {
+        height: mat.rows,
+        width: mat.cols
+      };
+
+      return data;
     }
     
     function storeData(data) {
       const retryOperations = new azure.ExponentialRetryPolicyFilter();
       const tableService = azure.createTableService(process.env["AzureWebJobsStorage"]).withFilter(retryOperations);
-      const tableName = 'testTable';
+      const tableName = 'testTable2';
       tableService.createTableIfNotExists(tableName, function(error, result, response){
           if(!error){
-              const entity = getEntity(fileName);
+              const entity = getEntity(fileName, data);
               tableService.insertEntity(tableName, entity, function (error, result, response) {
                   if(!error){
                     // Entity inserted
+                  } else {
+                    console.log(error);
                   }
                 });
           }
         });  
 
-        function getEntity(fileName) {
+        function getEntity(fileName, data) {
           const generator = azure.TableUtilities.entityGenerator;
           var entity = {
               PartitionKey: generator.String(getPartitionKey()),
               RowKey: generator.String(getRowKey(fileName)),
-              message: generator.String('This is a successful test!'),
-              goodDate: generator.DateTime(new Date(Date.UTC(2012, 8, 14))),
+              width: data.width,
+              height: data.height
             };
           return entity;
         }

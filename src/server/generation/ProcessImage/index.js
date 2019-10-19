@@ -12,8 +12,16 @@ module.exports = async function (context, newImageQueueItem) {
     const fileName = newImageQueueItem;
 
     const homeDir = os.homedir();
+    context.log("homeDir:", homeDir);
     const workDirName = 'overflow';
     const workDir = path.join(homeDir, workDirName);
+    context.log("workDir:", workDir);
+
+    context.log("workDir exists?: ", fs.existsSync(workDir))
+
+    if (!fs.existsSync(workDir)) {
+      fs.mkdirSync(workDir);
+    }
     
     blobService.getBlobToLocalFile(storageContainerName, fileName, path.join(workDir, 'temp.jpg'), (error, result) => {
       const data = processImage();

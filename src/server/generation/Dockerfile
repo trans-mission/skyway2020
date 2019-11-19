@@ -17,6 +17,8 @@ RUN apt-get update && \
 #RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 #USER docker
+RUN cd /home/site/wwwroot && \
+    sudo npm install -g azure-functions-core-tools
 
 RUN sudo apt-get update && \
     sudo apt-get install -y cmake
@@ -28,4 +30,4 @@ RUN cd /home/site/wwwroot && \
     sudo npm install
 
 RUN cd /home/site/wwwroot && \
-    func extensions install
+    sudo func extensions install

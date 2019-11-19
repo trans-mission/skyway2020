@@ -27,3 +27,5 @@ RUN sudo apt-get update && \
 RUN cd /home/site/wwwroot && \
     sudo npm install
 
+RUN cd /home/site/wwwroot && \
+    func extensions install

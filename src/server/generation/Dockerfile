@@ -11,14 +11,9 @@ RUN apt-get update && \
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y git
-
-#RUN adduser --disabled-password --gecos '' docker
-#RUN adduser docker sudo
-#RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
-#USER docker
+    
 RUN cd /home/site/wwwroot && \
-    sudo npm install -g azure-functions-core-tools
+    sudo npm install -g azure-functions-core-tools --unsafe-perm=true --allow-root
 
 RUN sudo apt-get update && \
     sudo apt-get install -y cmake

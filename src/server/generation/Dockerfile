@@ -11,7 +11,19 @@ RUN apt-get update && \
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y git
-    
+
+RUN sudo apt-get install -y software-properties-common
+
+RUN sudo apt-get install -y wget
+
+RUN wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
+    sudo dpkg -i packages-microsoft-prod.deb
+
+RUN sudo apt-get update && \
+    sudo apt-get install -y apt-transport-https && \
+    sudo apt-get update && \
+    sudo apt-get install -y dotnet-sdk-3.0
+
 RUN cd /home/site/wwwroot && \
     sudo npm install -g azure-functions-core-tools --unsafe-perm=true --allow-root
 

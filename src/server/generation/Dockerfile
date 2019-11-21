@@ -12,9 +12,8 @@ RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y git
 
-RUN sudo apt-get install -y software-properties-common
-
-RUN sudo apt-get install -y wget
+RUN sudo apt-get install -y software-properties-common && \
+    sudo apt-get install -y wget
 
 RUN wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
     sudo dpkg -i packages-microsoft-prod.deb
@@ -22,10 +21,14 @@ RUN wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsof
 RUN sudo apt-get update && \
     sudo apt-get install -y apt-transport-https && \
     sudo apt-get update && \
-    sudo apt-get install -y dotnet-sdk-3.0
+    sudo apt-get install -y dotnet-sdk-3.0 && \
+    sudo apt-get install -y dotnet-sdk-2.2
 
 RUN cd /home/site/wwwroot && \
     sudo npm install -g azure-functions-core-tools --unsafe-perm=true --allow-root
+
+RUN cd /home/site/wwwroot && \
+    sudo func extensions install
 
 RUN sudo apt-get update && \
     sudo apt-get install -y cmake
@@ -35,6 +38,3 @@ RUN sudo apt-get update && \
 
 RUN cd /home/site/wwwroot && \
     sudo npm install
-
-RUN cd /home/site/wwwroot && \
-    sudo func extensions install

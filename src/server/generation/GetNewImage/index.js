@@ -31,12 +31,22 @@ module.exports = async function (context, myTimer) {
     }
 
     function sendQueueMessage(message) {
-        const queueMessage = Buffer.from(message).toString('base64');
-        queueService.createMessage(queueName, queueMessage, function (error, results, response) {
+        function createQueueMessage() {
+            const queueMessage = Buffer.from(message).toString('base64');
+            queueService.createMessage(queueName, queueMessage, function (error, results, response) {
+                if (!error) {
+                    // Message inserted
+                }
+            });
+        }
+
+        queueService.createQueueIfNotExists(queueName, function(error) {
             if (!error) {
-                // Message inserted
+                createQueueMessage();
             }
         });
+
+
     }
         
     function getBlobStream(fileName) {

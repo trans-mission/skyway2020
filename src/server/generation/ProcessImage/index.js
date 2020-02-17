@@ -11,6 +11,8 @@ module.exports = async function (context, newImageQueueItem) {
     const blobService = azure.createBlobService(process.env["AzureWebJobsStorage"]);
     const fileName = newImageQueueItem;
 
+    const imageProcessor = require('./imageprocessor');
+
     const homeDir = os.homedir();
     context.log("homeDir:", homeDir);
     const workDirName = 'overflow';
@@ -30,15 +32,11 @@ module.exports = async function (context, newImageQueueItem) {
 
     function processImage() {
       const mat = cv.imread(path.join(workDir, 'temp.jpg'));
-      
-      const data = {
-        height: mat.rows,
-        width: mat.cols
-      };
-
+      const data = imageProcessor.processImage(mat);
+      console.log(data);
       return data;
     }
-    
+
     function storeData(data) {
       const retryOperations = new azure.ExponentialRetryPolicyFilter();
       const tableService = azure.createTableService(process.env["AzureWebJobsStorage"]).withFilter(retryOperations);

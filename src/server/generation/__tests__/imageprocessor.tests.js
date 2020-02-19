@@ -4,6 +4,8 @@ const imageProcessor = require('./../ProcessImage/imageprocessor');
 
 test('Processor should return correct dimensions', async () => {
     // Arrange
+    const currentDir = __dirname;
+    const imagesDir = path.join(currentDir, "images");
     const absolutImagePath = path.join(imagesDir, '1574719200047.jpg');
 
     // Act

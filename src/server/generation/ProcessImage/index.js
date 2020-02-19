@@ -1,29 +1,17 @@
+const azure = require('azure-storage');
+const os = require('os');
+const fs = require('fs');
+const path = require('path');
+const imageProcessor = require('./imageprocessor');
+
 module.exports = async function (context, newImageQueueItem) {
-    context.log('JavaScript queue trigger function processed work item', newImageQueueItem);
-    
-    const azure = require('azure-storage');
-    const cv = require('opencv4nodejs');
-    const os = require('os');
-    const fs = require('fs');
-    const path = require('path');
-    
+    context.log('JavaScript queue trigger function processed work item', newImageQueueItem);    
+
     const storageContainerName = 'images';
     const blobService = azure.createBlobService(process.env["AzureWebJobsStorage"]);
     const fileName = newImageQueueItem;
 
-    const imageProcessor = require('./imageprocessor');
-
-    const homeDir = os.homedir();
-    context.log("homeDir:", homeDir);
-    const workDirName = 'overflow';
-    const workDir = path.join(homeDir, workDirName);
-    context.log("workDir:", workDir);
-
-    context.log("workDir exists?: ", fs.existsSync(workDir))
-
-    if (!fs.existsSync(workDir)) {
-      fs.mkdirSync(workDir);
-    }
+    const workDir = getOrCreateWorkDir();
     
     blobService.getBlobToLocalFile(storageContainerName, fileName, path.join(workDir, 'temp.jpg'), (error, result) => {
       const data = processImage();
@@ -32,7 +20,7 @@ module.exports = async function (context, newImageQueueItem) {
 
     function processImage() {
       const data = imageProcessor.processImage(path.join(workDir, 'temp.jpg'));
-      console.log(data);
+      console.log("Extracted Data: ", data);
       return data;
     }
 
@@ -78,4 +66,29 @@ module.exports = async function (context, newImageQueueItem) {
             return rowKey;
         }
     }
+
+    function getOrCreateWorkDir(context) {
+      const debug = !!context;
+      const homeDir = os.homedir();
+      
+      if (debug) {
+        context.log("homeDir:", homeDir);
+      }
+      
+      const workDirName = 'overflow';
+      const workDir = path.join(homeDir, workDirName);
+      
+      if (debug) {
+        context.log("workDir:", workDir);
+        context.log("workDir exists?: ", fs.existsSync(workDir))
+      }
+
+      if (!fs.existsSync(workDir)) {
+        fs.mkdirSync(workDir);
+      }
+
+      return workDir;
+    }
 };
+
+

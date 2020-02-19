@@ -31,8 +31,7 @@ module.exports = async function (context, newImageQueueItem) {
     });
 
     function processImage() {
-      const mat = cv.imread(path.join(workDir, 'temp.jpg'));
-      const data = imageProcessor.processImage(mat);
+      const data = imageProcessor.processImage(path.join(workDir, 'temp.jpg'));
       console.log(data);
       return data;
     }

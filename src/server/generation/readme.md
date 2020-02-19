@@ -26,3 +26,9 @@
 ### Run the app
 - Using VSCode, press F5
 - Run `func start` using the command line from the same location as this file 👌
+
+## Testing
+### Overview
+We have integration tests that exercise the Image Processor module which is responsible for pulling out interesting data from traffic photos. 
+### Run the tests
+- From the same directory where this file lives, run `npm test`.

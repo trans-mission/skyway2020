@@ -1,9 +1,7 @@
-
+const request = require('request');
+const azure = require('azure-storage');
 
 module.exports = async function (context, myTimer) {
-    const request = require('request');
-    const azure = require('azure-storage');
-    
     const storageContainerName = 'images';
     const queueName = 'new-images';
 

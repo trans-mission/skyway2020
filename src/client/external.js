@@ -16,24 +16,56 @@ module.exports = {
 
 const s = ( p ) => {
 
-    let x = 100; 
-    let y = 100;
-  
+    let img = p.loadImage('/static/images/2.jpg');
+
     p.setup = function() {
-      p.createCanvas(700, 410);
+      p.createCanvas(1280, 777);
+      p.noLoop();
     };
-  
+
     p.draw = function() {
       p.background(0);
       p.fill(255);
-      p.rect(x,y,50,50);
+      p.image(img, 0, 0);
     };
+
   };
-  
-  let myp5 = new p5(s);
 
-//create a synth and connect it to the master output (your speakers)
-var synth = new Tone.Synth().toMaster()
+let myp5 = new p5(s);
 
-//play a middle 'C' for the duration of an 8th note
-synth.triggerAttackRelease('C4', '8n')
+// Sound
+var synth = new Tone.Synth().toMaster();
+
+var loop = new Tone.Loop(function(time) {
+  play(myp5);
+}, "6m").start(0);
+
+Tone.Transport.start();
+
+var index = 0;
+
+function play(myp5) {
+  console.log('play-enter');
+  synth.triggerAttackRelease('C' + (index + 1), '8n');
+  let imagePath = getImagePath(index);
+  let myImage = myp5.loadImage(imagePath, function () {
+    myp5.image(myImage, 0, 0);
+  });
+  index++;
+  if (index == 6) {
+    index = 0;
+  }
+};
+
+function getImagePath(index)
+{
+  return `/static/images/${index + 1}.jpg`;
+}
+
+// Data
+fetch('api/test').then(response => {
+  response.json().then(json => {
+    let data = json;
+    console.log(json);
+  });
+});

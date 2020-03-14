@@ -5,8 +5,10 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "buildDev": "browserify testfile.js --debug -o bundle.js",
-    "buildProd": "browserify testfile.js -o bundle.js"
+    "dev": "npm run buildDev & npm start --inspect-brk=9229",
+    "buildDev": "browserify index.js --debug -o static/bundle.js",
+    "buildProd": "browserify index.js -o static/bundle.js",
+    "watch": "budo index.js:static/bundle.js --live"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +16,7 @@
   "dependencies": {},
   "devDependencies": {
     "p5": "^1.0.0",
-    "tone": "^13.8.25"
+    "tone": "^13.8.25",
+    "watch": "^1.0.2"
   }
 }

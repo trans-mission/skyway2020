@@ -45,29 +45,34 @@ loop.start(0);
 Tone.Transport.start();
 
 var index = 0;
+var data;
 
 function play(myp5) {
   console.log('play-enter');
   synth.triggerAttackRelease('C' + (index + 1), '8n');
+
   let imagePath = getImagePath(index);
   let myImage = myp5.loadImage(imagePath, function () {
     myp5.image(myImage, 0, 0);
   });
+
   index++;
   if (index == 6) {
     index = 0;
   }
+  
 };
 
 function getImagePath(index)
 {
-  return `/static/images/${index + 1}.jpg`;
+  let panel = data.panels[index];
+  return panel.imagePath;
 }
 
 // Data
 fetch('api/test').then(response => {
   response.json().then(json => {
-    let data = json;
+    data = json;
     console.log(json);
   });
 });

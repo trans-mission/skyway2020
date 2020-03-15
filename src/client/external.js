@@ -48,8 +48,8 @@ var index = 0;
 var data;
 
 function play(myp5) {
-  console.log('play-enter');
-  synth.triggerAttackRelease('C' + (index + 1), '8n');
+  let note = getNote(index);
+  synth.triggerAttackRelease(note, '4n');
 
   let imagePath = getImagePath(index);
   let myImage = myp5.loadImage(imagePath, function () {
@@ -60,8 +60,14 @@ function play(myp5) {
   if (index == 6) {
     index = 0;
   }
-  
+
 };
+
+function getNote(index) {
+  let note = 'C' + (index + 3);
+  console.log(note);
+  return note;
+}
 
 function getImagePath(index)
 {

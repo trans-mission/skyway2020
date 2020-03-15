@@ -36,9 +36,11 @@ let myp5 = new p5(s);
 // Sound
 var synth = new Tone.Synth().toMaster();
 
-var loop = new Tone.Loop(function(time) {
+let loop = new Tone.Loop(function(time) {
   play(myp5);
-}, "6m").start(0);
+}, "1m")
+
+loop.start(0);
 
 Tone.Transport.start();
 

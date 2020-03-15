@@ -1,3 +1,6 @@
 ## Instrux
 - `npm install`
-- `npm run dev`
+
+## Dev
+-  `npm i -g nodemon`
+-  `npm run watch`

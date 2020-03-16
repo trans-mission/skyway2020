@@ -1,5 +1,11 @@
-var external = require('./external');
+const sequencer = require('./entities/sequencer');
+const dataService = require('./entities/dataService');
 
-var data = external.getName() + ' ' + external.getLastName();
+let data = dataService.getNewData();
+sequencer.start(data);
 
-console.log(data, "is the man!");
+// TODO
+// Add HTML buttons for transport controls
+//  sequencer.pause();
+//  sequencer.stop();
+// Refresh data on a loop and sequencer.updateData(data);

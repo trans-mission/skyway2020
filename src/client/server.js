@@ -1,14 +1,14 @@
-var http = require("http"),
-  url = require("url"),
-  path = require("path"),
-  fs = require("fs"),
-  port = process.argv[2] || 8889;
+const http = require("http");
+const url = require("url");
+const path = require("path");
+const fs = require("fs");
+const port = process.argv[2] || 8889;
 
 
 const app = function (request, response) {
 
-  var uri = url.parse(request.url).pathname
-    , filename = path.join(process.cwd(), uri);
+  let uri = url.parse(request.url).pathname;
+  let filename = path.join(process.cwd(), uri);
   
   if (request.method === 'GET' && uri === '/api/test') {
     let responseJson = getFakeResponseBody();
@@ -16,7 +16,6 @@ const app = function (request, response) {
     response.end(responseJson);
     return;
   }
-
 
   fs.exists(filename, function (exists) {
     if (!exists) {

@@ -17,6 +17,13 @@ const app = function (request, response) {
     return;
   }
 
+  if (request.method === 'GET' && uri === '/api/data') {
+    let responseJson = getLatestCarData();
+    response.statusCode = 200;
+    response.end(responseJson);
+    return;
+  }
+
   fs.exists(filename, function (exists) {
     if (!exists) {
       response.writeHead(404, { "Content-Type": "text/plain" });
@@ -25,7 +32,7 @@ const app = function (request, response) {
       return;
     }
 
-    if (fs.statSync(filename).isDirectory()) filename += '/index.html';
+    if (fs.statSync(filename).isDirectory()) filename += '/client/static/index.html';
 
     fs.readFile(filename, "binary", function (err, file) {
       if (err) {
@@ -59,7 +66,7 @@ getFakeResponseBody = () => {
     "panels":
     [{
             "frustrationLevel": 7,
-            "imagePath": "/static/images/1.jpg",
+            "imagePath": "/server/images/1.jpg",
             "cars":
             [{
                     "color": "(255, 192, 42)",
@@ -77,7 +84,7 @@ getFakeResponseBody = () => {
             ]
         }, {
             "frustrationLevel": 7,
-            "imagePath": "/static/images/2.jpg",
+            "imagePath": "/server/images/2.jpg",
             "cars":
             [{
                     "color": "(255, 192, 42)",
@@ -95,7 +102,7 @@ getFakeResponseBody = () => {
             ]
         }, {
             "frustrationLevel": 7,
-            "imagePath": "/static/images/3.jpg",
+            "imagePath": "/server/images/3.jpg",
             "cars":
             [{
                     "color": "(255, 192, 42)",
@@ -113,7 +120,7 @@ getFakeResponseBody = () => {
             ]
         }, {
             "frustrationLevel": 7,
-            "imagePath": "/static/images/4.jpg",
+            "imagePath": "/server/images/4.jpg",
             "cars":
             [{
                     "color": "(255, 192, 42)",
@@ -131,7 +138,7 @@ getFakeResponseBody = () => {
             ]
         }, {
             "frustrationLevel": 7,
-            "imagePath": "/static/images/5.jpg",
+            "imagePath": "/server/images/5.jpg",
             "cars":
             [{
                     "color": "(255, 192, 42)",
@@ -149,7 +156,7 @@ getFakeResponseBody = () => {
             ]
         }, {
             "frustrationLevel": 7,
-            "imagePath": "/static/images/6.jpg",
+            "imagePath": "/server/images/6.jpg",
             "cars":
             [{
                     "color": "(255, 192, 42)",

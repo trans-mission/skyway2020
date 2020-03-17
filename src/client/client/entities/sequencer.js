@@ -7,15 +7,16 @@ let index = 0;
 
 const start = (d) => {
     data = d;
+    let self = this;
     let loop = new Tone.Loop(function(time) {
-        play();
+        self.play();
     }, "1m");
     
     loop.start(0);
     Tone.Transport.start();
 }
 
-const play = () => {
+this.play = () => {
     this.showImage(index);
     this.playDrone(index);
     

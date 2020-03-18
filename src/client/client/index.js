@@ -1,5 +1,5 @@
 const sequencer = require('./entities/sequencer');
-const dataService = require('./entities/dataService');
+const dataService = require('./services/dataService');
 
 const dataRefreshRateInMinutes = 5;
 

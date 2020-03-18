@@ -2,7 +2,7 @@ const p5 = require('p5');
 
 const s = ( sketch ) => {
 
-    let img = sketch.loadImage('/static/images/1.jpg');
+    let img = sketch.loadImage('/server/images/1.jpg');
   
     sketch.setup = () => {
         sketch.createCanvas(1280, 777);

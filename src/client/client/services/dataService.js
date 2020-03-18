@@ -1,6 +1,6 @@
 const getNewData = async () => {
     console.log('getting dataz');
-    const response = await fetch('api/test');
+    const response = await fetch('api/data');
     if (response.ok) {
         const json = await response.json();
         return json;
@@ -13,10 +13,3 @@ const getNewData = async () => {
 module.exports = {
     getNewData: getNewData
 };
-
-/*
-    TODO
-    - Add error handling
-    - Provide default data when an error occurs or initialize data to a default value or something
-
-*/

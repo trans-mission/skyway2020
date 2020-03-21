@@ -13,30 +13,70 @@ module.exports = async function (context, req) {
       return result;
     }
 
+    const mapToEntities = (data) => {
+      const result = [];
+      data.forEach((row) => {
+        let imageName = `${row.RowKey._}.jpg`;
+        result.push({
+          imagePath: imageName,
+          frustrationIndex: 7,
+          cars: [/* TODO */]
+        })
+      });
+     
+      return result;
+    }
+
     const getFilteredSet = (todaysData) => {
-      const filteredSet = _.orderBy(todaysData, ['RowKey._'], ['desc']);
-      const result = _.take(filteredSet, 6);
+      let filteredSet = _.filter(todaysData, (o) => {
+        let width = o.width._;
+        return width >= 1280;
+      });
+      filteredSet = _.orderBy(todaysData, ['RowKey._'], ['desc']);
+      filteredSet = _.take(filteredSet, 6);
+      const result = mapToEntities(filteredSet);
+      return result;
+    }
+
+    const getJsonResult = (data) => {
+      let result = {};
+      result.lastModified = new Date().toISOString();
+      result.panels = data;
+
+      // data.forEach((row) => {
+      //   result.panels.push(row);
+      // });
       return result;
     }
 
     const partitionKey = getPartitionKey();
-    var query = new azure.TableQuery()
-      .where('PartitionKey eq ?', partitionKey);
+    var query = new azure.TableQuery().where('PartitionKey eq ?', partitionKey);
 
+    // https://stackoverflow.com/questions/54944356/async-azure-function-app-not-awaiting-as-expected
     tableSvc.queryEntities('testTable2',query, null, function(error, result, response) {
         if(!error) {
           const filteredSet = getFilteredSet(result.entries);
+          const jsonResult = getJsonResult(filteredSet);
+          // context.res = {
+          //   status: 200,
+          //   headers: {"Content-Type": "application/json"},
+          //   body: jsonResult
+          // };
+          // context.done();
+
+          context.res = {
+            status: 200,
+            headers: {"Content-Type": "application/json"},
+            body: {"hi": "there"}
+          } 
         }
       });
 
-    const name = (req.query.name || (req.body && req.body.name));
-    const responseMessage = name
-        ? "Hello, " + name + ". This HTTP triggered function executed successfully."
-        : "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.";
 
-    context.res = {
-        // status: 200, /* Defaults to 200 */
-        body: responseMessage
-    };
+      context.res = {
+        status: 200,
+        headers: {"Content-Type": "application/json"},
+        body: {"hi": "there"}
+      }
 }
 

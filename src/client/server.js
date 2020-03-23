@@ -2,7 +2,7 @@ const http = require("http");
 const url = require("url");
 const path = require("path");
 const fs = require("fs");
-const port = process.env.port || 8889;
+const port = process.env.port || 8080;
 
 const dataService = require('./server/services/dataService');
 

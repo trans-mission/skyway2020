@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npm run buildDev & npm start --inspect-brk=9229",
+    "dev": "npm run buildDev & npm start --inspect-brk=8080",
     "buildDev": "browserify client/index.js --debug -o client/static/bundle.js",
     "buildProd": "browserify client/index.js -o client/static/bundle.js",
     "watch": "nodemon --exec npm run dev"

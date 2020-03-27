@@ -1,11 +1,10 @@
+const util = require('util');
 const azure = require('azure-storage');
 const _ = require('lodash');
 
 module.exports = async function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
-
-    const retryOperations = new azure.ExponentialRetryPolicyFilter();
-    const tableSvc = azure.createTableService(process.env["AzureWebJobsStorage"]).withFilter(retryOperations);
+    // async attempt: const queryEntitiesAsync = util.promisify(tableSvc.queryEntities);
 
     const getPartitionKey = () => {
       const today = new Date();
@@ -49,34 +48,32 @@ module.exports = async function (context, req) {
       return result;
     }
 
-    const partitionKey = getPartitionKey();
-    var query = new azure.TableQuery().where('PartitionKey eq ?', partitionKey);
 
-    // https://stackoverflow.com/questions/54944356/async-azure-function-app-not-awaiting-as-expected
-    tableSvc.queryEntities('testTable2',query, null, function(error, result, response) {
-        if(!error) {
-          const filteredSet = getFilteredSet(result.entries);
-          const jsonResult = getJsonResult(filteredSet);
-          // context.res = {
-          //   status: 200,
-          //   headers: {"Content-Type": "application/json"},
-          //   body: jsonResult
-          // };
-          // context.done();
+    async function getAllFromTable() {
+      return new Promise((resolve, reject) => {
+        const retryOperations = new azure.ExponentialRetryPolicyFilter();
+        const tableSvc = azure.createTableService(process.env["AzureWebJobsStorage"]).withFilter(retryOperations);
 
-          context.res = {
-            status: 200,
-            headers: {"Content-Type": "application/json"},
-            body: {"hi": "there"}
-          } 
-        }
+        const partitionKey = getPartitionKey();
+        const query = new azure.TableQuery().where('PartitionKey eq ?', partitionKey);
+
+        tableSvc.queryEntities('testTable2', query, null, function(error, result, response) {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        });
       });
+    }
 
-
-      context.res = {
-        status: 200,
-        headers: {"Content-Type": "application/json"},
-        body: {"hi": "there"}
-      }
+    const result = await getAllFromTable();
+    const filteredSet = getFilteredSet(result.entries);
+    const jsonResult = getJsonResult(filteredSet);
+    context.res = {
+      status: 200,
+      headers: {"Content-Type": "application/json"},
+      body: jsonResult
+    };
 }
 

@@ -1,6 +1,11 @@
 import gab.opencv.*;
 import processing.video.*;
 import java.awt.Rectangle;
+import oscP5.*;
+import netP5.*;
+
+OscP5 oscP5;
+NetAddress myRemoteLocation;
 
 Movie video;
 OpenCV opencv;
@@ -8,6 +13,11 @@ int multiplier = 5;
 
 void setup() {
   size(1760, 1200);
+
+  oscP5 = new OscP5(this, 12000);
+  myRemoteLocation = new NetAddress("127.0.0.1", 12001);
+  
+  
   //video = new Movie(this, "dayTest0.mp4");
   video = new Movie(this, "nightTest0.mp4");
   opencv = new OpenCV(this, 352, 240);
@@ -29,20 +39,26 @@ void draw() {
   
   opencv.updateBackground();
   
-  //opencv.dilate();
+  opencv.dilate();
   //opencv.erode();
 
   //noFill();
   //stroke(255, 128, 0);
-  strokeWeight(3);
-  for (Contour contour : opencv.findContours()) {
+  strokeWeight(1);
+  ArrayList<Contour> contours = opencv.findContours();
+  for (Contour contour : contours) {
     Rectangle rect = contour.getBoundingBox();
-    //println("rect" + rect);
-    //contour.draw();
-    if (rect.width > 10 && rect.height > 5) {
+    contour.draw();
+    if (rect.width > 15 && rect.height > 5) {
       rect(rect.x * multiplier, rect.y * multiplier, rect.width * multiplier, rect.height * multiplier);
     }
+    
+    //rect(rect.x * multiplier, rect.y * multiplier, rect.width * multiplier, rect.height * multiplier);
   }
+  
+  OscMessage myMessage1 = new OscMessage("/objectcount");
+  myMessage1.add(contours.size()); 
+  oscP5.send(myMessage1, myRemoteLocation);
 }
 
 void movieEvent(Movie m) {

@@ -17,9 +17,8 @@ void setup() {
   oscP5 = new OscP5(this, 12000);
   myRemoteLocation = new NetAddress("127.0.0.1", 12001);
   
-  
-  //video = new Movie(this, "dayTest0.mp4");
-  video = new Movie(this, "nightTest0.mp4");
+  video = new Movie(this, "dayTest0.mp4");
+  //video = new Movie(this, "nightTest0.mp4"); //<>//
   opencv = new OpenCV(this, 352, 240);
   
   opencv.startBackgroundSubtraction(5, 3, 0.5);

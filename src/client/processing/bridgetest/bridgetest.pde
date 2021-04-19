@@ -93,10 +93,27 @@ private void playSound(Contour contour) {
     double distance = Math.abs(centerY * multiplier - toneLines.get(i));
     if (distance < 5) {
       rect(rect.x * multiplier, rect.y * multiplier, 200, 200);
-      sine.play(440, 0.2);
+      sine.play(getTone(i), 0.2);
       env.play(sine, 0.02, 0.04, 0.3, 0.4);
     }
   }
+}
+
+private int getTone(int i) {
+ switch (i) {
+  case 4:
+    return 110;
+  case 3:
+    return 220;
+  case 2: 
+    return 440;
+  case 1:
+    return 880;
+  case 0:
+    return 1760;
+  default:
+    return 440;
+ }
 }
 
 void movieEvent(Movie m) {

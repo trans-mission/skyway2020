@@ -23,8 +23,9 @@ void setup() {
   
   opencv.startBackgroundSubtraction(5, 3, 0.5);
   
-  stroke(255, 128, 0);
-  fill(255, 128, 0);
+  stroke(255, 184, 28);
+  strokeWeight(1);
+  fill(255, 184, 28);
   
   video.loop();
   //video.play();
@@ -39,27 +40,31 @@ void draw() {
   opencv.updateBackground();
   
   opencv.dilate();
+  opencv.dilate();
   //opencv.erode();
-
-  //noFill();
-  //stroke(255, 128, 0);
-  strokeWeight(1);
+  
   ArrayList<Contour> contours = opencv.findContours();
+  
   for (Contour contour : contours) {
     Rectangle rect = contour.getBoundingBox();
-    contour.draw();
-    if (rect.width > 15 && rect.height > 5) {
-      rect(rect.x * multiplier, rect.y * multiplier, rect.width * multiplier, rect.height * multiplier);
+    fill(255, 223, 0);
+    if (rect.width > 15 && rect.height > 5 && rect.height < 50 && rect.width < 50) {
+      rect(rect.x * multiplier, rect.y * multiplier, 175, 100);
+      noFill();
+      contour.draw();
     }
-    
-    //rect(rect.x * multiplier, rect.y * multiplier, rect.width * multiplier, rect.height * multiplier);
   }
   
-  OscMessage myMessage1 = new OscMessage("/objectcount");
-  myMessage1.add(contours.size()); 
-  oscP5.send(myMessage1, myRemoteLocation);
+  sendTotalObjectsMessage(contours.size());
 }
 
 void movieEvent(Movie m) {
   m.read();
+}
+
+private void sendTotalObjectsMessage(int objectsCount) {
+  OscMessage myMessage1 = new OscMessage("/objectcount");
+  myMessage1.add(objectsCount); 
+  oscP5.send(myMessage1, myRemoteLocation);
+ 
 }

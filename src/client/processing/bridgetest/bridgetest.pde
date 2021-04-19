@@ -9,6 +9,7 @@ OscP5 oscP5;
 NetAddress myRemoteLocation;
 
 SinOsc sine;
+Env env;
 
 Movie video;
 OpenCV opencv;
@@ -21,6 +22,9 @@ void setup() {
 
   oscP5 = new OscP5(this, 12000);
   myRemoteLocation = new NetAddress("127.0.0.1", 12001);
+  
+  sine = new SinOsc(this);
+  env = new Env(this);
   
   video = new Movie(this, "dayTest0.mp4");
   //video = new Movie(this, "nightTest0.mp4"); //<>//
@@ -86,10 +90,11 @@ private void playSound(Contour contour) {
   for (int i = 0; i < toneLines.size(); i++) {
     Rectangle rect = contour.getBoundingBox();
     double centerY = rect.getCenterY();
-    double distance = Math.abs(centerY - toneLines.get(i));
-    if (distance < 50) { //<>//
-      sine = new SinOsc(this);
-      sine.play(0.02, 0.04, 0.3, 0.4);
+    double distance = Math.abs(centerY * multiplier - toneLines.get(i));
+    if (distance < 5) {
+      rect(rect.x * multiplier, rect.y * multiplier, 200, 200);
+      sine.play(440, 0.2);
+      env.play(sine, 0.02, 0.04, 0.3, 0.4);
     }
   }
 }
@@ -120,6 +125,9 @@ private ArrayList<Integer> drawToneLines() {
     stroke(0);
     for (int l : result) {
       line(0, l, width, l); 
+      fill(200);
+      rect(0, l, width, 10);
+      fill(255);
     }
   }
   

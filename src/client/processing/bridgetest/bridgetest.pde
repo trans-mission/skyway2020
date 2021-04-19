@@ -8,8 +8,7 @@ import netP5.*;
 OscP5 oscP5;
 NetAddress myRemoteLocation;
 
-SinOsc sine;
-Env env;
+
 
 Movie video;
 OpenCV opencv;
@@ -23,9 +22,6 @@ void setup() {
   oscP5 = new OscP5(this, 12000);
   myRemoteLocation = new NetAddress("127.0.0.1", 12001);
   
-  sine = new SinOsc(this);
-  env = new Env(this);
-  
   video = new Movie(this, "dayTest0.mp4");
   //video = new Movie(this, "nightTest0.mp4"); //<>//
   opencv = new OpenCV(this, 352, 240);
@@ -37,8 +33,8 @@ void setup() {
   fill(255, 223, 0);
   
   video.loop();
-  //video.play();
-  delay(1000);
+
+  //delay(1000); // If this isn't present it'll say the video is null
 }
 
 void draw() {
@@ -56,6 +52,9 @@ void draw() {
   opencv.erode();
   opencv.dilate();
   opencv.dilate();
+  opencv.dilate();
+  opencv.dilate();
+
   //opencv.erode();
   
   ArrayList<Contour> contours = opencv.findContours();
@@ -74,15 +73,15 @@ void draw() {
 }
 
 private void drawObject(Rectangle rect, Contour contour) {
-  contour.draw();
   fill(255, 223, 0);
   stroke(255, 223, 0);
   
   if (rect.width > 10 && rect.height > 5 && rect.height < 50 && rect.width < 50) {
     //rect(rect.x * multiplier, rect.y * multiplier, 100, 60);
     ellipse(rect.x * multiplier, rect.y * multiplier, 50, 50);
-    //noFill();
-    //contour.draw();
+    noFill();
+    contour.draw();
+    fill(255, 223, 0);
   }
 }
 
@@ -92,9 +91,12 @@ private void playSound(Contour contour) {
     double centerY = rect.getCenterY();
     double distance = Math.abs(centerY * multiplier - toneLines.get(i));
     if (distance < 5) {
-      rect(rect.x * multiplier, rect.y * multiplier, 200, 200);
-      sine.play(getTone(i), 0.2);
-      env.play(sine, 0.02, 0.04, 0.3, 0.4);
+      ellipse(rect.x * multiplier, rect.y * multiplier, 150, 150);
+      // Super temp - will refactor - we'll only have one tonebar object per line - not a new one each loop. Poor garbage collector!
+      ToneBar toneBar = new ToneBar(this, getTone(i));
+      toneBar.play();
+      //sine.play(, 0.2);
+      //env.play(sine, 0.02, 0.04, 0.3, 0.4);
     }
   }
 }
@@ -129,7 +131,7 @@ private void sendTotalObjectsMessage(int objectsCount) {
 
 private ArrayList<Integer> drawToneLines() {
   ArrayList<Integer> result = new ArrayList<Integer>();
-  int numLines = 5;
+  int numLines = 4;
   int spaceHeight = height / numLines + 2;
   int line = spaceHeight;
   while(line < height) {
@@ -149,4 +151,23 @@ private ArrayList<Integer> drawToneLines() {
   }
   
   return result;
+}
+
+private class ToneBar {
+  private int freq;
+  private SinOsc sine;
+  private Env env;
+  private PApplet parent;
+  
+  ToneBar(PApplet parent, int freq) {
+    this.parent = parent;
+    this.freq = freq;
+    this.sine = new SinOsc(this.parent);
+    this.env = new Env(this.parent);
+  }
+  
+  public void play() {
+   this.sine.play(this.freq, 0.2);
+   this.env.play(this.sine, 0.02, 0.04, 0.3, 0.4);
+  }
 }

@@ -23,9 +23,9 @@ void setup() {
   
   opencv.startBackgroundSubtraction(5, 3, 0.5);
   
-  stroke(255, 184, 28);
+  stroke(255, 223, 0);
   strokeWeight(1);
-  fill(255, 184, 28);
+  fill(255, 223, 0);
   
   video.loop();
   //video.play();
@@ -33,12 +33,15 @@ void setup() {
 }
 
 void draw() {
-  background(255);
+  fill(255, 255, 255, 7);
+  rect(0,0,width,height);
+  
   image(video, 0, 0);  
   opencv.loadImage(video);
   
   opencv.updateBackground();
   
+  opencv.erode();
   opencv.dilate();
   opencv.dilate();
   //opencv.erode();
@@ -46,12 +49,17 @@ void draw() {
   ArrayList<Contour> contours = opencv.findContours();
   
   for (Contour contour : contours) {
-    Rectangle rect = contour.getBoundingBox();
+    //Rectangle rect = contour.getBoundingBox();
+    contour.setPolygonApproximationFactor(1);
+    Contour convexHull = contour.getPolygonApproximation();
+    Rectangle rect = convexHull.getBoundingBox();
+    contour.draw();
     fill(255, 223, 0);
-    if (rect.width > 15 && rect.height > 5 && rect.height < 50 && rect.width < 50) {
-      rect(rect.x * multiplier, rect.y * multiplier, 175, 100);
-      noFill();
-      contour.draw();
+    if (rect.width > 10 && rect.height > 5 && rect.height < 50 && rect.width < 50) {
+      //rect(rect.x * multiplier, rect.y * multiplier, 100, 60);
+      ellipse(rect.x * multiplier, rect.y * multiplier, 50, 50);
+      //noFill();
+      //contour.draw();
     }
   }
   

@@ -93,8 +93,10 @@ private void playSound(Contour contour) {
     if (distance < 5) {
       ellipse(rect.x * multiplier, rect.y * multiplier, 150, 150);
       // Super temp - will refactor - we'll only have one tonebar object per line - not a new one each loop. Poor garbage collector!
-      ToneBar toneBar = new ToneBar(this, getTone(i));
-      toneBar.play();
+      
+      sendCarToneMessage(i);
+      //ToneBar toneBar = new ToneBar(this, getTone(i));
+      //toneBar.play();
       //sine.play(, 0.2);
       //env.play(sine, 0.02, 0.04, 0.3, 0.4);
     }
@@ -123,10 +125,15 @@ void movieEvent(Movie m) {
 }
 
 private void sendTotalObjectsMessage(int objectsCount) {
-  OscMessage myMessage1 = new OscMessage("/objectcount");
-  myMessage1.add(objectsCount); 
-  oscP5.send(myMessage1, myRemoteLocation);
- 
+  OscMessage objectCountMessage = new OscMessage("/objectcount");
+  objectCountMessage.add(objectsCount); 
+  oscP5.send(objectCountMessage, myRemoteLocation);
+}
+
+private void sendCarToneMessage(int toneNumber) {
+  OscMessage carToneMessage = new OscMessage("/car-tone");
+  carToneMessage.add(toneNumber); 
+  oscP5.send(carToneMessage, myRemoteLocation);
 }
 
 private ArrayList<Integer> drawToneLines() {

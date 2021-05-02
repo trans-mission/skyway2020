@@ -90,13 +90,23 @@ Movie getLatestVideo() {
 void setLatestVideo() {
   println("Setting latest vid at: " + millis());
   Movie video = getLatestVideo();
-  video.loop();
-  while (video.width == 0) {
-   delay(2);  //<>//
-  }
+  initializeVideo(video);
+   //<>//
   Movie oldVideo = this.video;
   this.video = video;
-  //oldVideo.dispose();
+  
+  if (oldVideo != null) {
+    println("Disposing old video");
+    oldVideo.dispose();
+  }
+}
+
+private void initializeVideo(Movie video) {
+  video.loop();
+  
+  while (video.width == 0) {
+   delay(2); 
+  } 
 }
 
 private void drawObject(Rectangle rect, Contour contour) {

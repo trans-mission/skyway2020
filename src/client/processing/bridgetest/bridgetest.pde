@@ -94,7 +94,9 @@ void setLatestVideo() {
   while (video.width == 0) {
    delay(2);  //<>//
   }
+  Movie oldVideo = this.video;
   this.video = video;
+  //oldVideo.dispose();
 }
 
 private void drawObject(Rectangle rect, Contour contour) {

@@ -77,7 +77,6 @@ private void drawObject(Rectangle rect, Contour contour) {
   stroke(255, 223, 0);
   
   if (rect.width > 10 && rect.height > 5 && rect.height < 50 && rect.width < 50) {
-    //rect(rect.x * multiplier, rect.y * multiplier, 100, 60);
     ellipse(rect.x * multiplier, rect.y * multiplier, 50, 50);
     noFill();
     contour.draw();
@@ -91,34 +90,12 @@ private void playSound(Contour contour) {
     double centerY = rect.getCenterY();
     double distance = Math.abs(centerY * multiplier - toneLines.get(i));
     if (distance < 5) {
-      ellipse(rect.x * multiplier, rect.y * multiplier, 150, 150);
-      // Super temp - will refactor - we'll only have one tonebar object per line - not a new one each loop. Poor garbage collector!
-      
+      ellipse(rect.x * multiplier, rect.y * multiplier, 150, 150);      
       sendCarToneMessage(i);
-      //ToneBar toneBar = new ToneBar(this, getTone(i));
-      //toneBar.play();
-      //sine.play(, 0.2);
-      //env.play(sine, 0.02, 0.04, 0.3, 0.4);
     }
   }
 }
 
-private int getTone(int i) {
- switch (i) {
-  case 4:
-    return 110;
-  case 3:
-    return 220;
-  case 2: 
-    return 440;
-  case 1:
-    return 880;
-  case 0:
-    return 1760;
-  default:
-    return 440;
- }
-}
 
 void movieEvent(Movie m) {
   m.read();
@@ -158,23 +135,4 @@ private ArrayList<Integer> drawToneLines() {
   }
   
   return result;
-}
-
-private class ToneBar {
-  private int freq;
-  private SinOsc sine;
-  private Env env;
-  private PApplet parent;
-  
-  ToneBar(PApplet parent, int freq) {
-    this.parent = parent;
-    this.freq = freq;
-    this.sine = new SinOsc(this.parent);
-    this.env = new Env(this.parent);
-  }
-  
-  public void play() {
-   this.sine.play(this.freq, 0.2);
-   this.env.play(this.sine, 0.02, 0.04, 0.3, 0.4);
-  }
 }

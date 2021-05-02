@@ -15,6 +15,8 @@ OpenCV opencv;
 int multiplier = 5;
 boolean debug = true;
 ArrayList<Integer> toneLines;
+int lastVidLoad;
+boolean loadDayVid = false;
 
 void setup() {
   size(1760, 1200);
@@ -22,8 +24,8 @@ void setup() {
   oscP5 = new OscP5(this, 12000);
   myRemoteLocation = new NetAddress("127.0.0.1", 12001);
   
-  video = new Movie(this, "dayTest0.mp4");
-  //video = new Movie(this, "nightTest0.mp4"); //<>//
+  setLatestVideo();
+ 
   opencv = new OpenCV(this, 352, 240);
   
   opencv.startBackgroundSubtraction(5, 3, 0.5);
@@ -34,10 +36,15 @@ void setup() {
   
   video.loop();
 
-  //delay(1000); // If this isn't present it'll say the video is null
 }
 
 void draw() {
+  
+  if(lastVidLoad + 10000 < millis()) {
+    thread("setLatestVideo");
+    lastVidLoad = millis();
+  }
+  
   fill(255, 255, 255, 7);
   noStroke();
   rect(0,0,width,height);
@@ -49,14 +56,8 @@ void draw() {
   
   opencv.updateBackground();
   
-  opencv.erode();
-  opencv.dilate();
-  opencv.dilate();
-  opencv.dilate();
-  opencv.dilate();
-
-  //opencv.erode();
-  
+  processImage(opencv);
+   
   ArrayList<Contour> contours = opencv.findContours();
   
   for (Contour contour : contours) {
@@ -64,12 +65,36 @@ void draw() {
     contour.setPolygonApproximationFactor(1);
     Contour convexHull = contour.getPolygonApproximation();
     Rectangle rect = convexHull.getBoundingBox();
-    
     drawObject(rect, contour);
     playSound(contour);
   }
   
   sendTotalObjectsMessage(contours.size());
+}
+
+Movie getLatestVideo() {
+  Movie result;
+  
+  if (loadDayVid) {
+    loadDayVid = false;
+    result = new Movie(this, "dayTest0.mp4");
+  } else {
+    loadDayVid = true;
+    result = new Movie(this, "nightTest0.mp4");
+  }
+  
+  //delay(5000); // If this isn't present it'll say the video is null
+  return result;
+}
+
+void setLatestVideo() {
+  println("Setting latest vid at: " + millis());
+  Movie video = getLatestVideo();
+  video.loop();
+  while (video.width == 0) {
+   delay(2);  //<>//
+  }
+  this.video = video;
 }
 
 private void drawObject(Rectangle rect, Contour contour) {
@@ -82,6 +107,15 @@ private void drawObject(Rectangle rect, Contour contour) {
     contour.draw();
     fill(255, 223, 0);
   }
+}
+
+private void processImage(OpenCV opencv) {
+  opencv.erode();
+  opencv.dilate();
+  opencv.dilate();
+  opencv.dilate();
+  opencv.dilate();
+  //opencv.erode();
 }
 
 private void playSound(Contour contour) {

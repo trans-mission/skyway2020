@@ -4,11 +4,11 @@ import processing.sound.*;
 import java.awt.Rectangle;
 import oscP5.*;
 import netP5.*;
+import java.util.*;
+
 
 OscP5 oscP5;
 NetAddress myRemoteLocation;
-
-
 
 Movie video;
 OpenCV opencv;
@@ -74,14 +74,9 @@ void draw() {
 
 Movie getLatestVideo() {
   Movie result;
+  String latestVideoFileName = getLatestVideoFileName();
   
-  if (loadDayVid) {
-    loadDayVid = false;
-    result = new Movie(this, "dayTest0.mp4");
-  } else {
-    loadDayVid = true;
-    result = new Movie(this, "nightTest0.mp4");
-  }
+  result = new Movie(this, latestVideoFileName);
   
   //delay(5000); // If this isn't present it'll say the video is null
   return result;
@@ -181,4 +176,48 @@ private ArrayList<Integer> drawToneLines() {
   }
   
   return result;
+}
+
+File[] getLatestFiles(String path) {
+  File directory = new File(path);
+  File[] filesInDirectory = directory.listFiles();
+  return filesInDirectory;
+}
+
+String getLatestVideoFileName() {
+  String result = "";
+  String path = sketchPath();
+  path += "/data";
+  File[] files = getLatestFiles(path);
+  
+  Arrays.sort(files, new Comparator<File>()
+  {
+    public int compare(final File o1, final File o2)
+    {
+      return Long.compare(o2.lastModified(), o1.lastModified());
+    }
+  });
+    
+  
+  if (files[0].length() < 100) {
+    result = files[1].getName();
+  } else {
+     result = files[0].getName(); 
+  }
+  return result;
+  //for (int i = 0; i < files.length; i++) {
+  //  File file = files[i];
+    
+  //  if (latestVideo == null) {
+  //   latestVideo = file;
+  //   continue;
+  //  }
+    
+  //  if (latestVideo
+    
+  //  println("Name: " + file.getName());
+  //  String lastModified = new Date(file.lastModified()).toString();
+  //  println("Last Modified: " + lastModified);
+  //  println("-----------------------");
+  //}
 }

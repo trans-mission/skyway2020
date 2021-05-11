@@ -1,0 +1,11 @@
+#!/bin/bash
+
+absolute_data_path="/mnt/c/code/repos/skyway2020/src/client/processing/bridgetest/data"
+
+cd $absolute_data_path
+
+echo "Removing.."
+ls -tp | grep -v '/$' | tail -n +6 
+
+ls -tp | grep -v '/$' | tail -n +6 | xargs -I {} rm -- {}
+

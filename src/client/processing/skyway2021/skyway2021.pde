@@ -22,6 +22,8 @@ void setup() {
 
   oscP5 = new OscP5(this, 12000);
   myRemoteLocation = new NetAddress("127.0.0.1", 12001);
+
+  toneBars = drawToneBars();
   
   setLatestVideo();
  
@@ -52,8 +54,6 @@ void draw() {
   fill(255, 255, 255, 7);
   noStroke();
   rect(0,0,width,height);
-  
-  toneBars = drawToneBars();
   
   image(video, 0, 0);  
   opencv.loadImage(video);
@@ -130,12 +130,11 @@ private void processImage(OpenCV opencv) {
 }
 
 private void playSound(Contour contour) {
-  // for (int i = 0; i < toneBars.size(); i++) { // Change to for in so we have the obj ref already and can clean this up.
   for (ToneBar t : toneBars) {
     Rectangle rect = contour.getBoundingBox(); 
     double centerY = rect.getCenterY();
     double distance = Math.abs(centerY * multiplier - t.getY());
-    if (distance < 5) {
+    if (distance < 5 && t.shouldPlay(rect.getCenterX() * multiplier)) {
       ellipse(rect.x * multiplier, rect.y * multiplier, 150, 150);      
       sendCarToneMessage(t.getNumber());
     }
@@ -222,11 +221,14 @@ String getLatestVideoFileName() {
 
 private class ToneBar {
   private int y;
-  private  int number;
+  private int number;
+  private ArrayList<RecentTone> recentTones;
+  private int debounceTime = 500;
 
   ToneBar(int number, int y) {
     this.number = number;
     this.y = y;
+    this.recentTones = new ArrayList<RecentTone>();
   }
 
   int getNumber() {
@@ -235,5 +237,53 @@ private class ToneBar {
 
   int getY() {
     return this.y;
+  }
+
+  boolean shouldPlay(double x) {
+    int now = millis();
+
+    if (recentTones.size() == 0) {
+      this.recentTones.add(new RecentTone(x, now));
+      return true;
+    }
+
+    for(RecentTone rt : this.recentTones) {
+      boolean result = false;
+      
+      double xDifference = Math.abs(rt.x - x);
+      int timeDifference = now - rt.timePlayed;
+
+      // Pick up here - this ain't right 👇
+      if ((xDifference < 500) && (timeDifference > this.debounceTime)){
+        this.recentTones.add(new RecentTone(x, now));
+        return true;
+      }
+    }
+
+    pruneRecentTones(now);
+    
+    return false;
+  }
+
+  private void pruneRecentTones(int now) {
+    List<RecentTone> recentTonesToBeRemoved = new ArrayList<RecentTone>();
+
+    for(RecentTone rt : this.recentTones) {
+      if (now - rt.timePlayed > this.debounceTime) {
+        recentTonesToBeRemoved.add(rt);
+      }
+    }
+
+    this.recentTones.remove(recentTonesToBeRemoved);
+  }
+
+  private class RecentTone {
+    private double x;
+    private int timePlayed;
+
+    RecentTone(double x, int timePlayed) {
+      this.x = x;
+      this.timePlayed = timePlayed;
+    }
   }
 }

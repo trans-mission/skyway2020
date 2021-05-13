@@ -14,7 +14,7 @@ Movie video;
 OpenCV opencv;
 int multiplier = 5;
 boolean debug = true;
-ArrayList<Integer> toneLines;
+ArrayList<ToneBar> toneBars;
 int lastVidLoad;
 
 void setup() {
@@ -53,7 +53,7 @@ void draw() {
   noStroke();
   rect(0,0,width,height);
   
-  toneLines = drawToneLines();
+  toneBars = drawToneBars();
   
   image(video, 0, 0);  
   opencv.loadImage(video);
@@ -130,13 +130,14 @@ private void processImage(OpenCV opencv) {
 }
 
 private void playSound(Contour contour) {
-  for (int i = 0; i < toneLines.size(); i++) {
-    Rectangle rect = contour.getBoundingBox();
+  // for (int i = 0; i < toneBars.size(); i++) { // Change to for in so we have the obj ref already and can clean this up.
+  for (ToneBar t : toneBars) {
+    Rectangle rect = contour.getBoundingBox(); 
     double centerY = rect.getCenterY();
-    double distance = Math.abs(centerY * multiplier - toneLines.get(i));
+    double distance = Math.abs(centerY * multiplier - t.getY());
     if (distance < 5) {
       ellipse(rect.x * multiplier, rect.y * multiplier, 150, 150);      
-      sendCarToneMessage(i);
+      sendCarToneMessage(t.getNumber());
     }
   }
 }
@@ -158,30 +159,31 @@ private void sendCarToneMessage(int toneNumber) {
   oscP5.send(carToneMessage, myRemoteLocation);
 }
 
-private ArrayList<Integer> drawToneLines() {
-  ArrayList<Integer> result = new ArrayList<Integer>();
+private ArrayList<ToneBar> drawToneBars() {
+  ArrayList<ToneBar> toneBars = new ArrayList<ToneBar>();
+
   int numLines = 4;
-  int spaceHeight = height / numLines + 2;
+  int spaceHeight = height / (numLines + 2);
   int line = spaceHeight;
+  int i = 1;
 
-  while(line < height) {
-   result.add(line);
-   line += spaceHeight;
+  while(line <= height) {
+    toneBars.add(new ToneBar(i, line));
+    i++;
+    line += spaceHeight;
   }
-
-  result.add(line);
   
   if (debug) {
     stroke(0);
-    for (int l : result) {
-      line(0, l, width, l); 
+    for (ToneBar t : toneBars) {
+      line(0, t.getY(), width, t.getY()); 
       fill(200);
-      rect(0, l, width, 10);
+      rect(0, t.getY(), width, 10);
       fill(255);
     }
   }
   
-  return result;
+  return toneBars;
 }
 
 File[] getLatestFiles(String path) {
@@ -197,8 +199,7 @@ String getLatestVideoFileName() {
   File[] files = getLatestFiles(path);
   
   if (files.length == 0 || (files.length == 1 && files[0].isDirectory())) {
-   println("No video files found. Exiting"); 
-   exit();
+   println("No video files found."); 
    return "";
   }
   
@@ -220,10 +221,19 @@ String getLatestVideoFileName() {
 }
 
 private class ToneBar {
-  ToneBar() {
+  private int y;
+  private  int number;
+
+  ToneBar(int number, int y) {
+    this.number = number;
+    this.y = y;
   }
 
-  public void play() {
+  int getNumber() {
+    return this.number;
+  }
 
+  int getY() {
+    return this.y;
   }
 }

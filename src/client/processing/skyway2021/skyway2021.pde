@@ -190,6 +190,11 @@ String getLatestVideoFileName() {
   path += "/data";
   File[] files = getLatestFiles(path);
   
+  if (files.length == 0 || (files.length == 1 && files[0].isDirectory())) { //<>//
+   println("No video files found. Exiting"); 
+   exit();
+  }
+  
   Arrays.sort(files, new Comparator<File>()
   {
     public int compare(final File o1, final File o2)

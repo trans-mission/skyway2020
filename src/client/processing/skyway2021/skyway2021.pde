@@ -16,7 +16,6 @@ int multiplier = 5;
 boolean debug = true;
 ArrayList<Integer> toneLines;
 int lastVidLoad;
-boolean loadDayVid = false;
 
 void setup() {
   size(1760, 1200);
@@ -34,6 +33,11 @@ void setup() {
   strokeWeight(1);
   fill(255, 223, 0);
   
+  if (video == null) {
+    println("No video found. Exiting");
+    return;
+  }
+
   video.loop();
 
 }
@@ -75,18 +79,18 @@ void draw() {
 Movie getLatestVideo() {
   Movie result;
   String latestVideoFileName = getLatestVideoFileName();
-  
+  if (latestVideoFileName == "") return null;
   result = new Movie(this, latestVideoFileName);
   
-  //delay(5000); // If this isn't present it'll say the video is null
   return result;
 }
 
 void setLatestVideo() {
   println("Setting latest vid at: " + millis());
   Movie video = getLatestVideo();
+  if (video == null) return;
   initializeVideo(video);
-   //<>//
+
   Movie oldVideo = this.video;
   this.video = video;
   
@@ -159,10 +163,12 @@ private ArrayList<Integer> drawToneLines() {
   int numLines = 4;
   int spaceHeight = height / numLines + 2;
   int line = spaceHeight;
+
   while(line < height) {
    result.add(line);
    line += spaceHeight;
   }
+
   result.add(line);
   
   if (debug) {
@@ -190,9 +196,10 @@ String getLatestVideoFileName() {
   path += "/data";
   File[] files = getLatestFiles(path);
   
-  if (files.length == 0 || (files.length == 1 && files[0].isDirectory())) { //<>//
+  if (files.length == 0 || (files.length == 1 && files[0].isDirectory())) {
    println("No video files found. Exiting"); 
    exit();
+   return "";
   }
   
   Arrays.sort(files, new Comparator<File>()
@@ -210,19 +217,13 @@ String getLatestVideoFileName() {
      result = files[0].getName(); 
   }
   return result;
-  //for (int i = 0; i < files.length; i++) {
-  //  File file = files[i];
-    
-  //  if (latestVideo == null) {
-  //   latestVideo = file;
-  //   continue;
-  //  }
-    
-  //  if (latestVideo
-    
-  //  println("Name: " + file.getName());
-  //  String lastModified = new Date(file.lastModified()).toString();
-  //  println("Last Modified: " + lastModified);
-  //  println("-----------------------");
-  //}
+}
+
+private class ToneBar {
+  ToneBar() {
+  }
+
+  public void play() {
+
+  }
 }

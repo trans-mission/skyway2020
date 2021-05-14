@@ -223,7 +223,7 @@ private class ToneBar {
   private int y;
   private int number;
   private ArrayList<RecentTone> recentTones;
-  private int debounceTime = 500;
+  private int debounceTime = 1000;
 
   ToneBar(int number, int y) {
     this.number = number;
@@ -242,27 +242,25 @@ private class ToneBar {
   boolean shouldPlay(double x) {
     int now = millis();
 
-    if (recentTones.size() == 0) {
+    if (this.recentTones.size() == 0) {
       this.recentTones.add(new RecentTone(x, now));
       return true;
-    }
+    } //<>//
 
     for(RecentTone rt : this.recentTones) {
-      boolean result = false;
-      
       double xDifference = Math.abs(rt.x - x);
       int timeDifference = now - rt.timePlayed;
 
       // Pick up here - this ain't right 👇
-      if ((xDifference < 500) && (timeDifference > this.debounceTime)){
-        this.recentTones.add(new RecentTone(x, now));
-        return true;
-      }
+      if ((xDifference < 500) && (timeDifference < this.debounceTime)){ //<>//
+        return false;
+      } //<>//
     }
 
+    this.recentTones.add(new RecentTone(x, now));
     pruneRecentTones(now);
     
-    return false;
+    return true;
   }
 
   private void pruneRecentTones(int now) {

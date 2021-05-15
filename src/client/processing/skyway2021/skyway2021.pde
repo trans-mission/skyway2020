@@ -16,6 +16,7 @@ int multiplier = 5;
 boolean debug = true;
 ArrayList<ToneBar> toneBars;
 int lastVidLoad;
+int videoLengthInSeconds = 90;
 
 void setup() {
   size(1760, 1200);
@@ -23,7 +24,7 @@ void setup() {
   oscP5 = new OscP5(this, 12000);
   myRemoteLocation = new NetAddress("127.0.0.1", 12001);
 
-  toneBars = drawToneBars();
+  toneBars = createToneBars();
   
   setLatestVideo();
  
@@ -46,10 +47,12 @@ void setup() {
 
 void draw() {
   
-  if(lastVidLoad + 10000 < millis()) {
+  if(lastVidLoad + videoLengthInSeconds * 1000 < millis()) {
     thread("setLatestVideo");
     lastVidLoad = millis();
   }
+
+  drawToneBars(toneBars);
   
   fill(255, 255, 255, 7);
   noStroke();
@@ -158,28 +161,18 @@ private void sendCarToneMessage(int toneNumber) {
   oscP5.send(carToneMessage, myRemoteLocation);
 }
 
-private ArrayList<ToneBar> drawToneBars() {
+private ArrayList<ToneBar> createToneBars() {
   ArrayList<ToneBar> toneBars = new ArrayList<ToneBar>();
 
   int numLines = 4;
   int spaceHeight = height / (numLines + 2);
   int line = spaceHeight;
-  int i = 1;
+  int i = numLines;
 
   while(line <= height) {
     toneBars.add(new ToneBar(i, line));
-    i++;
+    i--;
     line += spaceHeight;
-  }
-  
-  if (debug) {
-    stroke(0);
-    for (ToneBar t : toneBars) {
-      line(0, t.getY(), width, t.getY()); 
-      fill(200);
-      rect(0, t.getY(), width, 10);
-      fill(255);
-    }
   }
   
   return toneBars;
@@ -217,6 +210,18 @@ String getLatestVideoFileName() {
      result = files[0].getName(); 
   }
   return result;
+}
+
+private void drawToneBars(ArrayList<ToneBar> toneBars) {
+    if (debug) {
+    stroke(0);
+    for (ToneBar t : toneBars) {
+      line(0, t.getY(), width, t.getY()); 
+      fill(200);
+      rect(0, t.getY(), width, 10);
+      fill(255);
+    }
+  }
 }
 
 private class ToneBar {

@@ -211,7 +211,7 @@ String getLatestVideoFileName() {
   });
     
   
-  if (files[0].length() < 100) {
+  if (files[0].length() < 1400000) {
     result = files[1].getName();
   } else {
      result = files[0].getName(); 
@@ -245,16 +245,15 @@ private class ToneBar {
     if (this.recentTones.size() == 0) {
       this.recentTones.add(new RecentTone(x, now));
       return true;
-    } //<>//
+    }
 
     for(RecentTone rt : this.recentTones) {
       double xDifference = Math.abs(rt.x - x);
       int timeDifference = now - rt.timePlayed;
 
-      // Pick up here - this ain't right 👇
-      if ((xDifference < 500) && (timeDifference < this.debounceTime)){ //<>//
+      if ((xDifference < 500) && (timeDifference < this.debounceTime)){
         return false;
-      } //<>//
+      }
     }
 
     this.recentTones.add(new RecentTone(x, now));

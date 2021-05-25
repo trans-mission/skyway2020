@@ -1,2 +1,8 @@
-# TBD
-# "C:\ProgramData\Ableton\Live 11 Suite\Program\Ableton Live 11 Suite.exe"
+#!/bin/bash
+
+absolute_ableton_live_path="/mnt/c/ProgramData/Ableton/Live 11 Suite/Program/"
+absolute_project_path="C:\\Users\\james\\OneDrive\\Music Production\\Live\\Overflow\\v2\\SkyWayDrone Project\\overflow\\Ableton5.19.21.als"
+
+cd "$absolute_ableton_live_path"
+ls
+'Ableton Live 11 Suite.exe' $absolute_project_path

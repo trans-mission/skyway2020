@@ -6,30 +6,30 @@ import oscP5.*;
 import netP5.*;
 import java.util.*;
 
+// Config
+int multiplier = 5;
+int videoLengthInSeconds = 90;
 
+// Init
 OscP5 oscP5;
-NetAddress myRemoteLocation;
-
+NetAddress abletonReceiver;
 Movie video;
 OpenCV opencv;
-int multiplier = 5;
-boolean debug = true;
+boolean debug = false;
 ArrayList<ToneBar> toneBars;
 int lastVidLoad;
-int videoLengthInSeconds = 90;
 
 void setup() {
   size(1760, 1200);
 
   oscP5 = new OscP5(this, 12000);
-  myRemoteLocation = new NetAddress("127.0.0.1", 12001);
+  abletonReceiver = new NetAddress("127.0.0.1", 12001);
 
   toneBars = createToneBars();
   
   setLatestVideo();
  
   opencv = new OpenCV(this, 352, 240);
-  
   opencv.startBackgroundSubtraction(5, 3, 0.5);
   
   stroke(255, 223, 0);
@@ -47,36 +47,46 @@ void setup() {
 
 void draw() {
   
+  checkForNewVideo();
+  drawToneBars(toneBars);
+  clearCanvas();
+  getFrameFromVideo();
+  processFrame(opencv);
+  int objectCount = makeArtHappen();
+  sendTotalObjectsMessage(objectCount);
+}
+
+void checkForNewVideo() {
   if(lastVidLoad + videoLengthInSeconds * 1000 < millis()) {
     thread("setLatestVideo");
     lastVidLoad = millis();
   }
+}
 
-  drawToneBars(toneBars);
-  
+void clearCanvas() {
   fill(255, 255, 255, 7);
   noStroke();
   rect(0,0,width,height);
-  
+}
+
+void getFrameFromVideo() {
   image(video, 0, 0);  
   opencv.loadImage(video);
-  
   opencv.updateBackground();
-  
-  processImage(opencv);
-   
+}
+
+int makeArtHappen() {
   ArrayList<Contour> contours = opencv.findContours();
   
   for (Contour contour : contours) {
-    //Rectangle rect = contour.getBoundingBox();
     contour.setPolygonApproximationFactor(1);
     Contour convexHull = contour.getPolygonApproximation();
     Rectangle rect = convexHull.getBoundingBox();
     drawObject(rect, contour);
     playSound(contour);
   }
-  
-  sendTotalObjectsMessage(contours.size());
+
+  return contours.size();
 }
 
 Movie getLatestVideo() {
@@ -118,23 +128,19 @@ private void drawObject(Rectangle rect, Contour contour) {
   boolean objectIsTheRightSize = rect.width > 10 && rect.height > 5 && rect.height < 50 && rect.width < 50;
 
   if (objectIsTheRightSize) {
-    fill(255, 0, 0);
     ellipse((float)rect.getCenterX() * multiplier, (float)rect.getCenterY() * multiplier, 10, 10);
-    noFill();
-    ellipse((float)rect.getCenterX() * multiplier, (float)rect.getCenterY() * multiplier, 50, 50);
     noFill();
     contour.draw();
     fill(255, 223, 0);
   }
 }
 
-private void processImage(OpenCV opencv) {
+private void processFrame(OpenCV opencv) {
   opencv.erode();
   opencv.dilate();
   opencv.dilate();
   opencv.dilate();
   opencv.dilate();
-  //opencv.erode();
 }
 
 private void playSound(Contour contour) {
@@ -157,13 +163,13 @@ void movieEvent(Movie m) {
 private void sendTotalObjectsMessage(int objectsCount) {
   OscMessage objectCountMessage = new OscMessage("/objectcount");
   objectCountMessage.add(objectsCount); 
-  oscP5.send(objectCountMessage, myRemoteLocation);
+  oscP5.send(objectCountMessage, abletonReceiver);
 }
 
 private void sendCarToneMessage(int toneNumber) {
   OscMessage carToneMessage = new OscMessage("/car-tone");
   carToneMessage.add(toneNumber); 
-  oscP5.send(carToneMessage, myRemoteLocation);
+  oscP5.send(carToneMessage, abletonReceiver);
 }
 
 private ArrayList<ToneBar> createToneBars() {

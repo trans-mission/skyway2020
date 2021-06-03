@@ -115,8 +115,13 @@ private void drawObject(Rectangle rect, Contour contour) {
   fill(255, 223, 0);
   stroke(255, 223, 0);
   
-  if (rect.width > 10 && rect.height > 5 && rect.height < 50 && rect.width < 50) {
-    ellipse(rect.x * multiplier, rect.y * multiplier, 50, 50);
+  boolean objectIsTheRightSize = rect.width > 10 && rect.height > 5 && rect.height < 50 && rect.width < 50;
+
+  if (objectIsTheRightSize) {
+    fill(255, 0, 0);
+    ellipse((float)rect.getCenterX() * multiplier, (float)rect.getCenterY() * multiplier, 10, 10);
+    noFill();
+    ellipse((float)rect.getCenterX() * multiplier, (float)rect.getCenterY() * multiplier, 50, 50);
     noFill();
     contour.draw();
     fill(255, 223, 0);
@@ -138,7 +143,7 @@ private void playSound(Contour contour) {
     double centerY = rect.getCenterY();
     double distance = Math.abs(centerY * multiplier - t.getY());
     if (distance < 5 && t.shouldPlay(rect.getCenterX() * multiplier)) {
-      ellipse(rect.x * multiplier, rect.y * multiplier, 150, 150);      
+      ellipse((float)rect.getCenterX() * multiplier, (float)rect.getCenterY() * multiplier, 150, 150);      
       sendCarToneMessage(t.getNumber());
     }
   }

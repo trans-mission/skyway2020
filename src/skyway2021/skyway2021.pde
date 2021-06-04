@@ -1,6 +1,6 @@
 import gab.opencv.*;
 import processing.video.*;
-import processing.sound.*;
+//import processing.sound.*;
 import java.awt.Rectangle;
 import oscP5.*;
 import netP5.*;

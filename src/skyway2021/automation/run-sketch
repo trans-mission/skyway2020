@@ -1,0 +1,8 @@
+#!/bin/bash
+
+absolute_processing_java_path="/mnt/c/Program Files/Processing/processing-3.5.4-windows32/processing-3.5.4/"
+absolute_sketch_path="C:\\code\\repos\\skyway2020\\src\\skyway2021"
+
+cd "$absolute_processing_java_path"
+
+processing-java.exe --sketch=$absolute_sketch_path --run

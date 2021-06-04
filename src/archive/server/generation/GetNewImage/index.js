@@ -1,9 +1,7 @@
-
+const request = require('request');
+const azure = require('azure-storage');
 
 module.exports = async function (context, myTimer) {
-    const request = require('request');
-    const azure = require('azure-storage');
-    
     const storageContainerName = 'images';
     const queueName = 'new-images';
 
@@ -31,12 +29,22 @@ module.exports = async function (context, myTimer) {
     }
 
     function sendQueueMessage(message) {
-        const queueMessage = Buffer.from(message).toString('base64');
-        queueService.createMessage(queueName, queueMessage, function (error, results, response) {
+        function createQueueMessage() {
+            const queueMessage = Buffer.from(message).toString('base64');
+            queueService.createMessage(queueName, queueMessage, function (error, results, response) {
+                if (!error) {
+                    // Message inserted
+                }
+            });
+        }
+
+        queueService.createQueueIfNotExists(queueName, function(error) {
             if (!error) {
-                // Message inserted
+                createQueueMessage();
             }
         });
+
+
     }
         
     function getBlobStream(fileName) {

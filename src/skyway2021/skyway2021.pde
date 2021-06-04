@@ -13,14 +13,16 @@ int videoLengthInSeconds = 90;
 // Init
 OscP5 oscP5;
 NetAddress abletonReceiver;
+NetAddress arduinoReceiver;
 Movie video;
 OpenCV opencv;
-boolean debug = false;
+boolean debug = true;
 ArrayList<ToneBar> toneBars;
 int lastVidLoad;
 
 void setup() {
   size(1760, 1200);
+  textSize(32);
 
   oscP5 = new OscP5(this, 12000);
   abletonReceiver = new NetAddress("127.0.0.1", 12001);
@@ -34,7 +36,7 @@ void setup() {
   
   stroke(255, 223, 0);
   strokeWeight(1);
-  fill(255, 223, 0);
+  fill(0);
   
   if (video == null) {
     println("No video found. Exiting");
@@ -52,8 +54,7 @@ void draw() {
   clearCanvas();
   getFrameFromVideo();
   processFrame(opencv);
-  int objectCount = makeArtHappen();
-  sendTotalObjectsMessage(objectCount);
+  makeArtHappen();
 }
 
 void checkForNewVideo() {
@@ -64,7 +65,7 @@ void checkForNewVideo() {
 }
 
 void clearCanvas() {
-  fill(255, 255, 255, 7);
+  fill(0, 0, 0, 7);
   noStroke();
   rect(0,0,width,height);
 }
@@ -75,8 +76,10 @@ void getFrameFromVideo() {
   opencv.updateBackground();
 }
 
-int makeArtHappen() {
+void makeArtHappen() {
   ArrayList<Contour> contours = opencv.findContours();
+  int northboundCount = 0;
+  int southboundCount = 0;
   
   for (Contour contour : contours) {
     contour.setPolygonApproximationFactor(1);
@@ -84,9 +87,24 @@ int makeArtHappen() {
     Rectangle rect = convexHull.getBoundingBox();
     drawObject(rect, contour);
     playSound(contour);
+    
+    if (isNorthbound(rect)) {
+      northboundCount++;
+    } else {
+      southboundCount++;
+    }
   }
 
-  return contours.size();
+  sendNorthboundCountMessage(northboundCount);
+  sendSouthboundCountMessage(southboundCount);
+  sendTotalObjectsMessage(northboundCount + southboundCount);
+}
+
+boolean isNorthbound(Rectangle rect) {
+  if (debug) {
+    line(width / 2, 0, width / 2, height);
+  }
+  return rect.getCenterX() * multiplier >= width / 2;
 }
 
 Movie getLatestVideo() {
@@ -166,6 +184,25 @@ private void sendTotalObjectsMessage(int objectsCount) {
   oscP5.send(objectCountMessage, abletonReceiver);
 }
 
+private void sendNorthboundCountMessage(int northboundCount) {
+  if (debug) {
+    text(northboundCount, width / 2 + width / 4, 50); 
+  }
+  OscMessage objectCountMessage = new OscMessage("/northboundcount");
+  objectCountMessage.add(northboundCount); 
+  oscP5.send(objectCountMessage, abletonReceiver);
+}
+
+private void sendSouthboundCountMessage(int southboundCount) {
+  if (debug) {
+    text(southboundCount, width / 2 - width / 4, 50); 
+  }
+  OscMessage objectCountMessage = new OscMessage("/southboundcount");
+  objectCountMessage.add(southboundCount); 
+  oscP5.send(objectCountMessage, abletonReceiver);
+}
+
+
 private void sendCarToneMessage(int toneNumber) {
   OscMessage carToneMessage = new OscMessage("/car-tone");
   carToneMessage.add(toneNumber); 
@@ -229,7 +266,7 @@ private void drawToneBars(ArrayList<ToneBar> toneBars) {
     for (ToneBar t : toneBars) {
       line(0, t.getY(), width, t.getY()); 
       fill(200);
-      rect(0, t.getY(), width, 10);
+      rect(0, t.getY(), width, 2);
       fill(255);
     }
   }

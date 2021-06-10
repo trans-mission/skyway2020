@@ -1,6 +1,6 @@
 import gab.opencv.*;
+import processing.serial.*;
 import processing.video.*;
-//import processing.sound.*;
 import java.awt.Rectangle;
 import oscP5.*;
 import netP5.*;
@@ -20,8 +20,10 @@ NetAddress arduinoReceiver;
 Movie video;
 OpenCV opencv;
 boolean debug = false;
+boolean enableSerial = false;
 ArrayList<ToneBar> toneBars;
 int lastVidLoad;
+Serial port;
 
 void setup() {
   size(1760, 1200);
@@ -48,6 +50,10 @@ void setup() {
 
   video.loop();
   vehicles = new ArrayList<Vehicle>();
+
+  if (enableSerial) {
+    port = new Serial(this, Serial.list()[0], 57600);
+  }
 }
 
 void draw() {
@@ -98,8 +104,8 @@ void makeArtHappen() {
     }
   }
 
-  sendNorthboundCountMessage(northboundCount);
-  sendSouthboundCountMessage(southboundCount);
+  sendNorthboundCountMessages(northboundCount);
+  sendSouthboundCountMessages(southboundCount);
   sendTotalObjectsMessage(northboundCount + southboundCount);
 }
 
@@ -188,22 +194,40 @@ private void sendTotalObjectsMessage(int objectsCount) {
   oscP5.send(objectCountMessage, abletonReceiver);
 }
 
-private void sendNorthboundCountMessage(int northboundCount) {
-  if (debug) {
-    text(northboundCount, width / 2 + width / 4, 50); 
-  }
+private void sendNorthboundCountMessages(int northboundCount) {
+  sendNorthboundCountOscMessage(northboundCount);
+  sendNorthboundCountSerialMessage(northboundCount);
+}
+
+private void sendSouthboundCountMessages(int southboundCount) {
+  sendSouthboundCountOscMessage(southboundCount);
+  sendSouthboundCountSerialMessage(southboundCount);
+}
+
+private void sendNorthboundCountOscMessage(int northboundCount) {
   OscMessage objectCountMessage = new OscMessage("/northboundcount");
   objectCountMessage.add(northboundCount); 
   oscP5.send(objectCountMessage, abletonReceiver);
 }
 
-private void sendSouthboundCountMessage(int southboundCount) {
-  if (debug) {
-    text(southboundCount, width / 2 - width / 4, 50); 
-  }
+private void sendSouthboundCountOscMessage(int southboundCount) {
   OscMessage objectCountMessage = new OscMessage("/southboundcount");
   objectCountMessage.add(southboundCount); 
   oscP5.send(objectCountMessage, abletonReceiver);
+}
+
+private void sendNorthboundCountSerialMessage(int northboundCount) {
+  if (enableSerial) {
+    port.write("NB:");
+    port.write(Integer.toString(northboundCount));
+  }
+}
+
+private void sendSouthboundCountSerialMessage(int southboundCount) {
+  if (enableSerial) {
+    port.write("SB:");
+    port.write(Integer.toString(southboundCount));
+  }
 }
 
 

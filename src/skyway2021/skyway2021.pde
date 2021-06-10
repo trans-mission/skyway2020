@@ -58,7 +58,6 @@ void draw() {
   getFrameFromVideo();
   processFrame(opencv);
   makeArtHappen();
-  drawDazzle(mouseX, mouseY);
 }
 
 void checkForNewVideo() {
@@ -69,7 +68,7 @@ void checkForNewVideo() {
 }
 
 void clearCanvas() {
-  fill(0, 0, 0, 7);
+  fill(0, 0, 0, 5);
   noStroke();
   rect(0,0,width,height);
 }
@@ -150,7 +149,8 @@ private void drawObject(Rectangle rect, Contour contour) {
   boolean objectIsTheRightSize = rect.width > 10 && rect.height > 5 && rect.height < 50 && rect.width < 50;
 
   if (objectIsTheRightSize) {
-    ellipse((float)rect.getCenterX() * multiplier, (float)rect.getCenterY() * multiplier, 10, 10);
+    //ellipse((float)rect.getCenterX() * multiplier, (float)rect.getCenterY() * multiplier, 10, 10);
+    drawDazzle((float)rect.getCenterX() * multiplier, (float)rect.getCenterY() * multiplier);
     noFill();
     contour.draw();
     fill(255, 223, 0);

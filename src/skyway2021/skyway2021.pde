@@ -9,6 +9,9 @@ import java.util.*;
 // Config
 int multiplier = 5;
 int videoLengthInSeconds = 90;
+ArrayList<Vehicle> vehicles;
+int vehicleLimit = 300;
+int maxDazzlerations = 100;
 
 // Init
 OscP5 oscP5;
@@ -16,7 +19,7 @@ NetAddress abletonReceiver;
 NetAddress arduinoReceiver;
 Movie video;
 OpenCV opencv;
-boolean debug = true;
+boolean debug = false;
 ArrayList<ToneBar> toneBars;
 int lastVidLoad;
 
@@ -44,7 +47,7 @@ void setup() {
   }
 
   video.loop();
-
+  vehicles = new ArrayList<Vehicle>();
 }
 
 void draw() {
@@ -55,6 +58,7 @@ void draw() {
   getFrameFromVideo();
   processFrame(opencv);
   makeArtHappen();
+  drawDazzle(mouseX, mouseY);
 }
 
 void checkForNewVideo() {
@@ -334,6 +338,54 @@ private class ToneBar {
     RecentTone(double x, int timePlayed) {
       this.x = x;
       this.timePlayed = timePlayed;
+    }
+  }
+}
+
+void drawDazzle(float x, float y) {
+  
+  //add new vehicles if under max limit
+  if(vehicles.size() < vehicleLimit) {
+    vehicles.add(new Vehicle(x, y));
+  }
+  
+  // dazzle vehicles or remove em if they die
+  for(int i = 0; i < vehicles.size(); i++) {  
+    Vehicle v = vehicles.get(i);
+    
+    if(vehicles.get(i).isDead) {
+      vehicles.remove(i);
+    } else {
+      v.dazzle();
+    }
+  }
+}
+
+class Vehicle {
+  
+  PVector pos;
+  public boolean isDead;
+  int dazzlerations = 0;
+    
+  Vehicle(float x, float y) {
+    this.pos = new PVector(x, y); 
+    isDead = false;
+  }
+  
+  public void dazzle() {
+    
+    float diminish = map(dazzlerations, 0, maxDazzlerations, 255, 0);
+    
+    push();
+    noStroke();
+    fill(random(255), diminish);
+    rect(pos.x, pos.y, 10, 10);
+    pop();
+    
+    dazzlerations++;
+    
+    if(dazzlerations > maxDazzlerations) {
+      isDead = true;
     }
   }
 }

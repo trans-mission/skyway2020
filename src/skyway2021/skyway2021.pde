@@ -390,6 +390,7 @@ class Vehicle {
   PVector pos;
   public boolean isDead;
   int dazzlerations = 0;
+  int boxSize = 10; //adjust as needed
     
   Vehicle(float x, float y) {
     this.pos = new PVector(x, y); 
@@ -401,9 +402,47 @@ class Vehicle {
     float diminish = map(dazzlerations, 0, maxDazzlerations, 255, 0);
     
     push();
-    noStroke();
-    fill(random(255), diminish);
-    rect(pos.x, pos.y, 10, 10);
+      rectMode(CENTER);
+      noStroke();
+
+      //3x3 grid
+      
+      //top left
+      fill(random(255), diminish);
+      rect(pos.x - boxSize, pos.y - boxSize, boxSize, boxSize);
+      
+      //top center
+      fill(random(255), diminish);
+      rect(pos.x, pos.y - boxSize, boxSize, boxSize);
+      
+      //top right
+      fill(random(255), diminish);
+      rect(pos.x + boxSize, pos.y - boxSize, boxSize, boxSize);
+      
+      //center left
+      fill(random(255), diminish);
+      rect(pos.x - boxSize, pos.y, boxSize, boxSize);
+      
+       //center
+      fill(random(255), diminish);
+      rect(pos.x, pos.y, boxSize, boxSize);
+      
+      //center right
+      fill(random(255), diminish);
+      rect(pos.x + boxSize, pos.y, boxSize, boxSize);
+      
+      //bottom left
+      fill(random(255), diminish);
+      rect(pos.x - boxSize, pos.y + boxSize, boxSize, boxSize);
+      
+      //bottom center
+      fill(random(255), diminish);
+      rect(pos.x, pos.y + boxSize, boxSize, boxSize);
+      
+      //bottom center
+      fill(random(255), diminish);
+      rect(pos.x + boxSize, pos.y + boxSize, boxSize, boxSize);
+      
     pop();
     
     dazzlerations++;

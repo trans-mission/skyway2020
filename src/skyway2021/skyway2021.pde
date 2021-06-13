@@ -12,6 +12,9 @@ int videoLengthInSeconds = 90;
 ArrayList<Vehicle> vehicles;
 int vehicleLimit = 300;
 int maxDazzlerations = 100;
+byte byteArr[];
+final int LEFT = 0;
+final int RIGHT = 1;
 
 // Init
 OscP5 oscP5;
@@ -23,7 +26,7 @@ boolean debug = false;
 boolean enableSerial = false;
 ArrayList<ToneBar> toneBars;
 int lastVidLoad;
-Serial port;
+Serial arduinoPort;
 
 void setup() {
   size(1760, 1200);
@@ -52,8 +55,13 @@ void setup() {
   vehicles = new ArrayList<Vehicle>();
 
   if (enableSerial) {
-    port = new Serial(this, Serial.list()[0], 57600);
+   // List all the available serial ports:
+    printArray(Serial.list());
+  
+    // Open the port you are using at the rate you want:
+    arduinoPort = new Serial(this, Serial.list()[0], 9600); 
   }
+  byteArr = new byte[2];
 }
 
 void draw() {
@@ -64,6 +72,7 @@ void draw() {
   getFrameFromVideo();
   processFrame(opencv);
   makeArtHappen();
+  verify();
 }
 
 void checkForNewVideo() {
@@ -106,6 +115,7 @@ void makeArtHappen() {
 
   sendNorthboundCountMessages(northboundCount);
   sendSouthboundCountMessages(southboundCount);
+  sendBytes(southboundCount, northboundCount);
   sendTotalObjectsMessage(northboundCount + southboundCount);
 }
 
@@ -196,12 +206,10 @@ private void sendTotalObjectsMessage(int objectsCount) {
 
 private void sendNorthboundCountMessages(int northboundCount) {
   sendNorthboundCountOscMessage(northboundCount);
-  sendNorthboundCountSerialMessage(northboundCount);
 }
 
 private void sendSouthboundCountMessages(int southboundCount) {
   sendSouthboundCountOscMessage(southboundCount);
-  sendSouthboundCountSerialMessage(southboundCount);
 }
 
 private void sendNorthboundCountOscMessage(int northboundCount) {
@@ -214,20 +222,6 @@ private void sendSouthboundCountOscMessage(int southboundCount) {
   OscMessage objectCountMessage = new OscMessage("/southboundcount");
   objectCountMessage.add(southboundCount); 
   oscP5.send(objectCountMessage, abletonReceiver);
-}
-
-private void sendNorthboundCountSerialMessage(int northboundCount) {
-  if (enableSerial) {
-    port.write("NB:");
-    port.write(Integer.toString(northboundCount));
-  }
-}
-
-private void sendSouthboundCountSerialMessage(int southboundCount) {
-  if (enableSerial) {
-    port.write("SB:");
-    port.write(Integer.toString(southboundCount));
-  }
 }
 
 
@@ -286,6 +280,35 @@ String getLatestVideoFileName() {
      result = files[0].getName(); 
   }
   return result;
+}
+
+void sendBytes(int left, int right) {
+  
+  Integer l = new Integer(left);
+  Integer r = new Integer(right);
+  
+  byteArr[LEFT]  = l.byteValue();
+  byteArr[RIGHT] = r.byteValue();
+ 
+  if (enableSerial) {
+     arduinoPort.write(byteArr); 
+  }
+}
+
+// debug function
+// feedback from arduino to verify bytes received
+void verify() {
+  if (enableSerial) {
+    byte[] inBuffer = new byte[1];
+    while (arduinoPort.available() > 0) {
+      inBuffer = arduinoPort.readBytes();
+      arduinoPort.readBytes(inBuffer);
+      if (inBuffer != null) {
+        String myString = new String(inBuffer);
+        println(myString);
+      }
+    } 
+  }
 }
 
 private void drawToneBars(ArrayList<ToneBar> toneBars) {

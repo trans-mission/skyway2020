@@ -4,6 +4,7 @@ Serial arduinoPort;
 
 final boolean USE_NOISE = true;
 
+
 byte byteArr[];
 final int LEFT = 0;
 final int RIGHT = 1;

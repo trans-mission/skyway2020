@@ -8,7 +8,7 @@ Servo leftServo;
 Servo rightServo;
 
 int leftPos = 0;
-int rightPos = 0;
+int rightPos = 180;
 
 int l_rollBin[SMOOTHING];
 int l_rollFinal = 0;
@@ -48,7 +48,7 @@ void serialEvent() {
     Serial.readBytes(buf, 2);
 
     l_rollBin[roll_inc] = map(buf[0], 0, 255, 0, 180);
-    r_rollBin[roll_inc] = map(buf[1], 0, 255, 0, 180);
+    r_rollBin[roll_inc] = map(buf[1], 0, 255, 180, 0); //reversed
 
     //increment
     roll_inc++;

@@ -4,7 +4,7 @@ import controlP5.*;
 Serial arduinoPort;
 ControlP5 cp5;
 
-final int PORT_INDEX = 1;
+final int PORT_INDEX = 11;
 final int MIN_VAL = 0;
 final int MAX_VAL = 255;
 
@@ -29,10 +29,10 @@ void setup() {
   cp5 = new ControlP5(this);
   
   // name, minValue, maxValue, defaultValue, x, y, width, height
-  cp5.addSlider("leftServoSlider", MIN_VAL, MAX_VAL, 0, 10, 10, 100, 20);
+  cp5.addSlider("leftServoSlider", 0, 255, 0, 10, 10, 100, 20);
   
   // name, minValue, maxValue, defaultValue, x, y, width, height
-  cp5.addSlider("rightServoSlider", MIN_VAL, MAX_VAL, 0, 10, 50, 100, 20);
+  cp5.addSlider("rightServoSlider", 0, 255, 0, 10, 50, 100, 20);
  
 }
 

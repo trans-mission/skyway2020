@@ -1,8 +1,8 @@
 #include <Servo.h>
 
 const int SMOOTHING = 50;
-const int MIN_VAL 0;
-const int MAX_VAL 20;
+const int MIN_VAL = 0;
+const int MAX_VAL = 20;
 const int BUFFER_SIZE = 50;
 byte buf[BUFFER_SIZE];
 

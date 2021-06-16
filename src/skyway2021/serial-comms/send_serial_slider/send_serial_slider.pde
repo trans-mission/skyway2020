@@ -6,7 +6,7 @@ ControlP5 cp5;
 
 final int PORT_INDEX = 1;
 final int MIN_VAL = 0;
-final int MAX_VAL = 20;
+final int MAX_VAL = 255;
 
 byte byteArr[];
 final int LEFT = 0;

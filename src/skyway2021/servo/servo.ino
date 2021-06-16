@@ -2,7 +2,7 @@
 
 const int SMOOTHING = 50;
 const int MIN_VAL = 0;
-const int MAX_VAL = 20;
+const int MAX_VAL = 255;
 const int BUFFER_SIZE = 50;
 byte buf[BUFFER_SIZE];
 
@@ -21,8 +21,7 @@ int roll_inc = 0;
 
 void setup() {
   
-  Serial.begin(9600);
-   
+ 
   leftServo.attach(9); 
   rightServo.attach(10);
 
@@ -32,7 +31,8 @@ void setup() {
   memset(l_rollBin, 0, sizeof(l_rollBin));
   memset(r_rollBin, 0, sizeof(r_rollBin));
 
-  delay(5000);
+  Serial.begin(9600);
+
 }
 
 void loop() {

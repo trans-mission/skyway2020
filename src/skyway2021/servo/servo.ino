@@ -1,6 +1,8 @@
 #include <Servo.h>
 
 const int SMOOTHING = 50;
+const int MIN_VAL 0;
+const int MAX_VAL 20;
 const int BUFFER_SIZE = 50;
 byte buf[BUFFER_SIZE];
 
@@ -29,6 +31,8 @@ void setup() {
 
   memset(l_rollBin, 0, sizeof(l_rollBin));
   memset(r_rollBin, 0, sizeof(r_rollBin));
+
+  delay(5000);
 }
 
 void loop() {
@@ -47,8 +51,8 @@ void serialEvent() {
 
     Serial.readBytes(buf, 2);
 
-    l_rollBin[roll_inc] = map(buf[0], 0, 255, 0, 180);
-    r_rollBin[roll_inc] = map(buf[1], 0, 255, 180, 0); //reversed
+    l_rollBin[roll_inc] = map(buf[0], MIN_VAL, MAX_VAL, 0, 180);
+    r_rollBin[roll_inc] = map(buf[1], MIN_VAL, MAX_VAL, 180, 0); //reversed
 
     //increment
     roll_inc++;

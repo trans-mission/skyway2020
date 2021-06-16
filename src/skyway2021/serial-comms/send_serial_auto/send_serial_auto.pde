@@ -3,6 +3,7 @@ import processing.serial.*;
 Serial arduinoPort;
 
 final boolean USE_NOISE = true;
+final int SERIAL_PORT_INDEX = 11;
 
 byte byteArr[];
 final int LEFT = 0;
@@ -18,7 +19,7 @@ void setup() {
   printArray(Serial.list());
 
   // Open the port you are using at the rate you want:
-  arduinoPort = new Serial(this, Serial.list()[1], 9600);
+  arduinoPort = new Serial(this, Serial.list()[SERIAL_PORT_INDEX], 9600);
   byteArr = new byte[2];
  
 }

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-absolute_data_path="/mnt/c/code/repos/skyway2020/src/skyway2021/data"
+absolute_data_path="/Users/tonidove/Documents/Overflow/skyway2020/src/skyway2021/data/"
 
 cd $absolute_data_path
 

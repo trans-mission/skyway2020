@@ -284,8 +284,8 @@ String getLatestVideoFileName() {
 
 void sendBytes(int left, int right) {
   
-  Integer l = new Integer(left);
-  Integer r = new Integer(right);
+  Integer l = new Integer(mapForArduino(left));
+  Integer r = new Integer(mapForArduino(right));
   
   byteArr[LEFT]  = l.byteValue();
   byteArr[RIGHT] = r.byteValue();
@@ -293,6 +293,10 @@ void sendBytes(int left, int right) {
   if (enableSerial) {
      arduinoPort.write(byteArr); 
   }
+}
+
+int mapForArduino(int value) {
+ return Math.round(map(value, 0, 20, 0, 255));
 }
 
 // debug function

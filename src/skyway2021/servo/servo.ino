@@ -19,8 +19,7 @@ int roll_inc = 0;
 
 void setup() {
   
-  Serial.begin(9600);
-   
+ 
   leftServo.attach(9); 
   rightServo.attach(10);
 
@@ -29,6 +28,9 @@ void setup() {
 
   memset(l_rollBin, 0, sizeof(l_rollBin));
   memset(r_rollBin, 0, sizeof(r_rollBin));
+
+  Serial.begin(9600);
+
 }
 
 void loop() {

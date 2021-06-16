@@ -29,7 +29,9 @@ int lastVidLoad;
 Serial arduinoPort;
 
 void setup() {
-  size(1760, 1200);
+  fullScreen();
+  noCursor();
+  //size(1760, 1200);
   textSize(32);
 
   oscP5 = new OscP5(this, 12000);

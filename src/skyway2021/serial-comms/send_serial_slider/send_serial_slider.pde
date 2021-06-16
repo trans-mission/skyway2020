@@ -1,32 +1,50 @@
 import processing.serial.*;
+import controlP5.*;
 
 Serial arduinoPort;
-
-final boolean USE_NOISE = true;
+ControlP5 cp5;
 
 byte byteArr[];
 final int LEFT = 0;
 final int RIGHT = 1;
 
-//for generating dummy values
-float time = 0.0;
-float increment = 0.1;
+int leftServoPos = 0;
+int rightServoPos = 0;
 
 void setup() {
+  
+  size(200, 100);
   
   // List all the available serial ports:
   printArray(Serial.list());
 
   // Open the port you are using at the rate you want:
-  arduinoPort = new Serial(this, Serial.list()[1], 9600);
+  arduinoPort = new Serial(this, Serial.list()[0], 9600);
   byteArr = new byte[2];
+  
+  cp5 = new ControlP5(this);
+  
+  // name, minValue, maxValue, defaultValue, x, y, width, height
+  cp5.addSlider("leftServoSlider", 0, 180, 0, 10, 10, 100, 20);
+  
+  // name, minValue, maxValue, defaultValue, x, y, width, height
+  cp5.addSlider("rightServoSlider", 0, 180, 0, 10, 50, 100, 20);
  
 }
 
 void draw() {
-  generateDummyValues();
+  sendBytes(leftServoPos, rightServoPos);
   verify();
 }
+
+void leftServoSlider(int theValue) {
+  leftServoPos = theValue;
+}
+
+void rightServoSlider(int theValue) {
+  rightServoPos = theValue;
+}
+
 
 void sendBytes(int left, int right) {
   
@@ -51,32 +69,4 @@ void verify() {
       println(myString);
     }
   }
-}
-
-// for testing purposes
-// normally values will come from the app
-// for left and right-bound traffic counts
-void generateDummyValues() {
-  
-  int l, r;
-  
-  if(USE_NOISE) {
-   // dummy lane counts for example
-   l = int(noise(time) * random(255));
-   r = int(noise(time) * random(255));
-  } else { // random
-    // dummy lane counts for example
-   l = int(random(255));
-   r = int(random(255));
-  }
- 
- 
- //int r = (int) noise(time) * (int) random(255);
- 
-  // With each cycle, increment the " time "
-  time += increment;
- 
-  //println(l);
-  sendBytes(l, r);
-  
 }

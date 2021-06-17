@@ -23,10 +23,11 @@ NetAddress arduinoReceiver;
 Movie video;
 OpenCV opencv;
 boolean debug = false;
-boolean enableSerial = false;
+boolean enableSerial = true;
 ArrayList<ToneBar> toneBars;
 int lastVidLoad;
 Serial arduinoPort;
+final int arduinoPortIndex = 3;
 
 void setup() {
   fullScreen();
@@ -61,7 +62,7 @@ void setup() {
     printArray(Serial.list());
   
     // Open the port you are using at the rate you want:
-    arduinoPort = new Serial(this, Serial.list()[0], 9600); 
+    arduinoPort = new Serial(this, Serial.list()[arduinoPortIndex], 9600); 
   }
   byteArr = new byte[2];
 }

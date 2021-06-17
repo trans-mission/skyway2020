@@ -4,5 +4,5 @@ absolute_data_path="/Users/tonidove/Documents/Overflow/skyway2020/src/skyway2021
 
 cd $absolute_data_path
 
-\ffmpeg -i https://34-d7.divas.cloud/CHAN-4598/CHAN-4598_0.stream/playlist.m3u8 -c copy -f segment -segment_time 90 -segment_format mp4 -segment_atclocktime 1 -reset_timestamps 1 -strftime 1 "skyway_cam_4598_%Y-%m-%d_%H-%M-%S_%z.mp4"
+\ffmpeg -i "https://34-d7.divas.cloud/CHAN-4598/CHAN-4598_0.stream/playlist.m3u8?146.201.49.124&vdswztokenhash=cbm3_XTwMu6kOoIQUP-Nke4TURxPgiBzcUaTy43QZaQ="  -c copy -f segment -segment_time 90 -segment_format mp4 -segment_atclocktime 1 -reset_timestamps 1 -strftime 1 "skyway_cam_4598_%Y-%m-%d_%H-%M-%S_%z.mp4"
 
